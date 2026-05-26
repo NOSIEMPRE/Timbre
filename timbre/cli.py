@@ -98,6 +98,18 @@ def add_wiki_links(profile: str, entity: dict) -> str:
 # ── Intent classification ─────────────────────────────────────────────────────
 
 async def classify_intent(text: str, has_session: bool) -> str:
+    VALID = {"research", "followup", "list", "memory", "help", "exit"}
+    words = text.strip().split()
+
+    # Fast-path: unambiguous exit commands
+    if text.strip().lower() in ("exit", "quit", "退出", "再见", "拜拜"):
+        return "exit"
+
+    # Fast-path: short input with no question mark and no active session
+    # → almost certainly a name or company to research, skip the LLM call
+    if len(words) <= 3 and "?" not in text and "？" not in text and not has_session:
+        return "research"
+
     provider = get_provider()
     state = "（当前 session 已完成过一次研究）" if has_session else "（当前 session 尚未研究任何人）"
     raw = await provider.complete(
@@ -111,7 +123,8 @@ async def classify_intent(text: str, has_session: bool) -> str:
              "- help       （需要帮助）\n"
              "- exit       （想退出）\n\n只输出一个单词。",
     )
-    return raw.strip().lower().split()[0] if raw.strip() else "research"
+    intent = raw.strip().lower().split()[0] if raw.strip() else "research"
+    return intent if intent in VALID else "research"
 
 
 # ── Follow-up QA ──────────────────────────────────────────────────────────────
