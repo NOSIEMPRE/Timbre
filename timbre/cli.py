@@ -310,7 +310,7 @@ _PROVIDERS = [
     ("glm",        "智谱 GLM",            "open.bigmodel.cn",                           "https://open.bigmodel.cn/api/paas/v4"),
     ("kimi",       "Kimi (Moonshot AI)", "platform.moonshot.cn",                       "https://api.moonshot.cn/v1"),
     ("grok",       "Grok (xAI)",         "console.x.ai",                               "https://api.x.ai/v1"),
-    ("gemini",     "Gemini (Google)",    "aistudio.google.com/app/apikey",             "https://generativelanguage.googleapis.com/v1beta/openai"),
+    ("gemini",     "Gemini (Google)",    "aistudio.google.com/app/apikey",             "https://generativelanguage.googleapis.com/v1beta/openai/"),
     ("ollama",     "Ollama (本地部署)",   "ollama.ai",                                  "http://localhost:11434/v1"),
     ("other",      "其他 OpenAI-compatible API", "",                                   None),
 ]
