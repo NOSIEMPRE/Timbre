@@ -1,0 +1,14 @@
+node_modules/
+.env
+*.log
+.DS_Store
+profiles/*.md
+memory/store.json
+memory/timbre.db
+timbre/memory/timbre.db
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/

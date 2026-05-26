@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "timbre-agent"
+version = "0.1.0"
+description = "Founder intelligence agent for the Chinese startup ecosystem"
+requires-python = ">=3.9"
+dependencies = [
+    "anthropic>=0.30.0",
+    "openai>=1.0.0",
+    "tavily-python>=0.3.0",
+    "playwright>=1.40.0",
+    "pdfplumber>=0.10.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "langfuse>=2.0.0",
+]
+
+[project.scripts]
+timbre = "timbre.cli:main_sync"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["timbre*"]
+
+[tool.setuptools.package-data]
+timbre = ["prompts/*.yaml"]

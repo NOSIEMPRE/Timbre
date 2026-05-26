@@ -1,0 +1,11 @@
+anthropic>=0.30.0
+openai>=1.0.0
+tavily-python>=0.3.0
+playwright>=1.40.0
+pdfplumber>=0.10.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+rich>=13.0.0
+
+# Optional observability — set LANGFUSE_SECRET_KEY + LANGFUSE_PUBLIC_KEY to enable
+langfuse>=2.0.0

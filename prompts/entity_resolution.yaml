@@ -1,0 +1,21 @@
+task: |
+  用户输入了「{input}」。这可能是创始人姓名、公司名称或核心产品名称。
+
+  请通过 2 次网络搜索确认以下信息：
+  1. 搜索「{input} 创始人 估值 融资」
+  2. 搜索「{input} founder CEO valuation」
+
+  确认后，仅输出如下格式的纯 JSON，不要有任何其他文字：
+
+  {
+    "founder": "创始人中文姓名（若只知英文姓名则填英文）",
+    "founder_en": "创始人英文姓名",
+    "company": "公司名称",
+    "product": "核心产品名称（若与公司名不同）",
+    "valuation": "已知估值，如 $3B，未知填 unknown",
+    "is_chinese_founder": true,
+    "confirmed": true,
+    "confidence": "high 或 medium 或 low"
+  }
+
+  如果确认不是华人创始人，或估值明显低于 2 亿美金，将 confirmed 设为 false 并说明原因。
