@@ -302,8 +302,37 @@ async def main():
             console.print(f"\n  [red]✗[/red]  {escape(str(e))}\n")
 
 
+_PROVIDERS = [
+    ("anthropic",  "Anthropic Claude",   "console.anthropic.com/settings/keys",       None),
+    ("openai",     "OpenAI",             "platform.openai.com/api-keys",               "https://api.openai.com/v1"),
+    ("deepseek",   "DeepSeek",           "platform.deepseek.com/api-keys",             "https://api.deepseek.com/v1"),
+    ("qwen",       "通义千问 Qwen",       "dashscope.aliyuncs.com",                     "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+    ("glm",        "智谱 GLM",            "open.bigmodel.cn",                           "https://open.bigmodel.cn/api/paas/v4"),
+    ("kimi",       "Kimi (Moonshot AI)", "platform.moonshot.cn",                       "https://api.moonshot.cn/v1"),
+    ("grok",       "Grok (xAI)",         "console.x.ai",                               "https://api.x.ai/v1"),
+    ("gemini",     "Gemini (Google)",    "aistudio.google.com/app/apikey",             "https://generativelanguage.googleapis.com/v1beta/openai"),
+    ("ollama",     "Ollama (本地部署)",   "ollama.ai",                                  "http://localhost:11434/v1"),
+    ("other",      "其他 OpenAI-compatible API", "",                                   None),
+]
+
+_DEFAULT_MODELS = {
+    "anthropic": "claude-sonnet-4-6",
+    "openai":    "gpt-4o",
+    "deepseek":  "deepseek-chat",
+    "qwen":      "qwen-max",
+    "glm":       "glm-4",
+    "kimi":      "moonshot-v1-8k",
+    "grok":      "grok-2-latest",
+    "gemini":    "gemini-2.0-flash",
+    "ollama":    "llama3.1:8b",
+    "other":     "",
+}
+
+
 def config():
     """Interactive first-run configuration wizard."""
+    import subprocess
+
     cfg_path = Path.home() / ".timbre" / ".env"
     cfg_path.parent.mkdir(exist_ok=True)
 
@@ -316,27 +345,103 @@ def config():
 
     console.print("\n  [bold cyan]见微 · Timbre[/bold cyan]  配置向导\n")
 
-    def ask(key: str, prompt: str) -> str:
-        cur = existing.get(key, "")
-        hint = f" [dim](当前: {cur[:16]}…)[/dim]" if cur else ""
+    def ask(prompt: str, default: str = "", secret: bool = False) -> str:
+        hint = f" [dim](回车保留现有值)[/dim]" if default else " [dim](回车跳过)[/dim]"
         console.print(f"  {prompt}{hint}")
         val = input("  › ").strip()
-        return val or cur
+        return val or default
 
-    anthropic_key = ask("ANTHROPIC_API_KEY", "Anthropic API Key [dim](必填)[/dim]")
-    tavily_key    = ask("TAVILY_API_KEY",    "Tavily API Key   [dim](必填)[/dim]")
-    obsidian_path = ask("OBSIDIAN_VAULT_PATH", "Obsidian Vault 路径 [dim](可选，回车跳过)[/dim]")
-    cookies_file  = ask("BROWSER_COOKIES_FILE", "cookies.txt 路径  [dim](可选)[/dim]")
+    # ── Step 1: Choose provider ───────────────────────────────────────────────
+    console.print("  [bold]选择 AI 模型提供商：[/bold]\n")
+    for i, (_, label, url, _) in enumerate(_PROVIDERS, 1):
+        url_hint = f"  [dim]{url}[/dim]" if url else ""
+        console.print(f"  [cyan]{i:2}.[/cyan] {label}{url_hint}")
+    console.print()
 
-    lines = [f"ANTHROPIC_API_KEY={anthropic_key}", f"TAVILY_API_KEY={tavily_key}"]
+    cur_provider = "anthropic"
+    if existing.get("OPENAI_BASE_URL"):
+        for key, _, _, base_url in _PROVIDERS:
+            if base_url and existing["OPENAI_BASE_URL"].startswith(base_url.split("/v")[0]):
+                cur_provider = key
+                break
+        else:
+            cur_provider = "other"
+
+    cur_idx = next((i for i, (k, *_) in enumerate(_PROVIDERS, 1) if k == cur_provider), 1)
+    console.print(f"  选择编号 [dim](当前: {cur_idx})[/dim]")
+    raw = input("  › ").strip()
+    idx = int(raw) - 1 if raw.isdigit() and 1 <= int(raw) <= len(_PROVIDERS) else cur_idx - 1
+    provider_key, provider_label, _, base_url = _PROVIDERS[idx]
+
+    console.print()
+
+    # ── Step 2: API key ───────────────────────────────────────────────────────
+    if provider_key == "anthropic":
+        cur_key = existing.get("ANTHROPIC_API_KEY", "")
+        api_key = ask("Anthropic API Key", default=cur_key)
+    elif provider_key == "ollama":
+        api_key = "ollama"
+        console.print("  [dim]Ollama 不需要 API Key，跳过。[/dim]")
+    else:
+        cur_key = existing.get("OPENAI_API_KEY", "")
+        api_key = ask(f"{provider_label} API Key", default=cur_key)
+
+    if provider_key == "other":
+        cur_url = existing.get("OPENAI_BASE_URL", "")
+        base_url = ask("Base URL (e.g. https://api.xxx.com/v1)", default=cur_url)
+
+    # ── Step 3: Model name ────────────────────────────────────────────────────
+    default_model = _DEFAULT_MODELS.get(provider_key, "")
+    cur_model = existing.get("MODEL", default_model)
+    console.print()
+    model = ask(f"模型名称", default=cur_model)
+
+    # ── Step 4: Tavily ────────────────────────────────────────────────────────
+    console.print()
+    cur_tavily = existing.get("TAVILY_API_KEY", "")
+    tavily_key = ask("Tavily API Key  [dim]app.tavily.com[/dim]", default=cur_tavily)
+
+    # ── Step 5: Optional ─────────────────────────────────────────────────────
+    console.print()
+    cur_obsidian = existing.get("OBSIDIAN_VAULT_PATH", "")
+    obsidian_path = ask("Obsidian Vault 路径  [dim](可选)[/dim]", default=cur_obsidian)
+
+    cur_cookies = existing.get("BROWSER_COOKIES_FILE", "")
+    cookies_file = ask("cookies.txt 路径  [dim](付费内容访问，可选)[/dim]", default=cur_cookies)
+
+    # ── Write config ──────────────────────────────────────────────────────────
+    lines = []
+    if provider_key == "anthropic":
+        lines.append(f"ANTHROPIC_API_KEY={api_key}")
+    else:
+        lines.append(f"OPENAI_API_KEY={api_key}")
+        if base_url:
+            lines.append(f"OPENAI_BASE_URL={base_url}")
+    if model:
+        lines.append(f"MODEL={model}")
+    if tavily_key:
+        lines.append(f"TAVILY_API_KEY={tavily_key}")
     if obsidian_path:
         lines.append(f"OBSIDIAN_VAULT_PATH={obsidian_path}")
     if cookies_file:
         lines.append(f"BROWSER_COOKIES_FILE={cookies_file}")
 
     cfg_path.write_text("\n".join(lines) + "\n")
-    console.print(f"\n  [green]✓[/green]  配置已保存至 [bold]{cfg_path}[/bold]")
-    console.print("  运行 [bold cyan]timbre[/bold cyan] 开始使用。\n")
+    console.print(f"\n  [green]✓[/green]  配置已保存至 [bold]{cfg_path}[/bold]\n")
+
+    # ── Install Playwright browsers ───────────────────────────────────────────
+    console.print("  [dim]正在安装 Playwright 浏览器（首次需要约 1 分钟）…[/dim]")
+    result = subprocess.run(
+        [sys.executable, "-m", "playwright", "install", "chromium"],
+        capture_output=True, text=True,
+    )
+    if result.returncode == 0:
+        console.print("  [green]✓[/green]  Playwright chromium 安装完成")
+    else:
+        console.print(f"  [yellow]⚠[/yellow]  Playwright 安装失败：{result.stderr.strip()[:200]}")
+        console.print("  可手动运行：[bold]playwright install chromium[/bold]")
+
+    console.print("\n  运行 [bold cyan]timbre[/bold cyan] 开始使用。\n")
 
 
 def main_sync():
