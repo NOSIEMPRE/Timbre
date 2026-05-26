@@ -122,7 +122,7 @@ All agent behavior is defined in `prompts/`. Changing how the agent researches o
 
 ## Known Limitations
 
-Timbre only surfaces public information. Compensation, true equity splits, and internal dynamics are outside its reach.
+Timbre only surfaces public information. Compensation and internal dynamics are outside its reach. Equity structure and funding details are available on paid platforms (Tianyancha, Qichacha, Crunchbase, PitchBook, The Information) — configure the relevant cookies and browse_url will fetch them directly.
 
 LinkedIn penetration is lower in China — organizational details for domestic teams are often sparse. Funding data typically lags reality by three to six months. These are data-source ceilings, not tool limitations.
 
