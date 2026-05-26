@@ -22,6 +22,13 @@ def _load(name: str) -> dict:
         return yaml.safe_load(f)
 
 
+def _fmt(template: str, **kwargs) -> str:
+    """Safe substitute: only replaces known {key} tokens, ignores bare { } in JSON examples."""
+    for key, value in kwargs.items():
+        template = template.replace(f"{{{key}}}", str(value))
+    return template
+
+
 def _parse_json(text: str) -> dict | None:
     text = re.sub(r"```(?:json)?\n?", "", text).strip().rstrip("`")
     m = re.search(r"\{.*\}", text, re.DOTALL)
@@ -44,7 +51,7 @@ async def resolve_entity(input_text: str, send: Callable) -> dict:
 
     p = _load("entity_resolution")
     system = _load("system")["role"]
-    task = p["task"].format(input=input_text)
+    task = _fmt(p["task"], input=input_text)
 
     provider = get_provider()
     raw = await provider.react_loop(system=system, user=task, tools=[web_search], send=send, max_iterations=4)
@@ -64,7 +71,7 @@ async def plan_research(entity: dict, send: Callable) -> dict:
     send({"type": "stage", "name": "research_plan", "status": "start", "label": "制定搜索计划"})
 
     p = _load("research_plan")
-    task = p["task"].format(
+    task = _fmt(p["task"],
         founder=entity.get("founder", ""),
         founder_en=entity.get("founder_en", "") or "",
         company=entity.get("company", ""),
@@ -126,7 +133,7 @@ async def synthesize(entity: dict, results_by_dimension: dict, extra_context: st
 
     p = _load("founder_profile")
     system = _load("system")["role"]
-    task = p["task"].format(
+    task = _fmt(p["task"],
         founder=entity.get("founder", ""),
         company=entity.get("company", ""),
         date=datetime.now().strftime("%Y-%m-%d"),
