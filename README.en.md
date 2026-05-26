@@ -74,11 +74,11 @@ timbre
 Just talk to it. No commands to memorize.
 
 ```
-timbre › tell me about the founder of DeepSeek
+timbre › tell me about the founder of [company]
 timbre › what's his team background?         ← follow-up on current research
 timbre › more detail on the funding rounds   ← keep asking
-timbre › now research Minimax, use this @./meeting-notes.md
-timbre › 月之暗面 @https://www.theinformation.com/articles/...
+timbre › now research [another founder], use this @./meeting-notes.md
+timbre › [company] @https://www.theinformation.com/articles/...
 timbre › show me my saved profiles
 timbre › exit
 ```

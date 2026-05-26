@@ -74,12 +74,12 @@ timbre
 启动后直接用自然语言输入，不需要记命令。
 
 ```
-timbre › 帮我研究一下梁文锋
-timbre › DeepSeek 的创始人背景是什么
+timbre › 帮我研究一下 xxx 公司的创始人
+timbre › xx 公司的创始人背景是什么
 timbre › 他的联创团队呢              ← 追问，基于刚才的研究回答
 timbre › 融资情况能详细说说吗        ← 继续追问
-timbre › 再研究一下闫俊杰，参考这个 @./meeting-notes.md
-timbre › 月之暗面 @https://www.theinformation.com/articles/...
+timbre › 再研究一下 xxx，参考这个 @./meeting-notes.md
+timbre › xx 公司 @https://www.theinformation.com/articles/...
 timbre › 查看我保存的档案
 timbre › 退出
 ```
