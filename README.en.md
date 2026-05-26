@@ -8,7 +8,7 @@ Primary market research has never lacked data. What it lacks is the ability to t
 
 A founder's worldview surfaces in a podcast from three years ago. Organizational shifts show up quietly in LinkedIn title updates. Strategic priorities bleed into the phrasing of job postings. All of this is public — and none of it is in any database.
 
-Timbre is a founder intelligence agent for the Chinese startup ecosystem. Give it a name, a company, or a product — it confirms who you're asking about, researches them across four dimensions, and compiles a structured profile with actual judgments, not just data points.
+Timbre is a founder intelligence agent. Give it a name, a company, or a product — it confirms who you're asking about, researches them across four dimensions, and compiles a structured profile with actual judgments, not just data points.
 
 ---
 

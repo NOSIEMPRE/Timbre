@@ -60,6 +60,7 @@ async def resolve_entity(input_text: str, send: Callable) -> dict:
         "founder": input_text, "founder_en": "", "company": input_text,
         "valuation": "unknown", "confirmed": False, "confidence": "low",
     }
+    entity.pop("is_chinese_founder", None)
 
     send({"type": "stage", "name": "entity_resolution", "status": "done", "result": entity})
     return entity
