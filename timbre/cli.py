@@ -239,16 +239,19 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
 
     if intent == "help":
         console.print("""
-  [bold]直接说你想做什么，Timbre 会理解。[/bold]
+  [bold]直接说你想研究谁，不用记命令。[/bold]
 
-  [dim]研究：[/dim]  帮我研究一下梁文锋
-           DeepSeek 的创始人背景
-           月之暗面 @./notes.md @https://...
+  [dim]发起研究[/dim]
+    帮我看看 xx 公司的创始人
+    某某 AI 公司 CEO 的背景
+    xx 创始人 @./尽调材料.pdf @https://...
 
-  [dim]追问：[/dim]  他的融资情况能详细说说吗
-           联创团队背景呢
+  [dim]追问当前档案[/dim]
+    他的融资情况能详细说说吗
+    联创团队呢
 
-  [dim]其他：[/dim]  查看我保存的档案 · 看看历史记录 · 退出
+  [dim]其他[/dim]
+    查看档案  ·  历史记录  ·  退出
 """)
         return session_ctx
 
@@ -298,7 +301,7 @@ async def main():
         else f"[dim]~/.timbre/profiles/[/dim]"
 
     console.print(f"\n  [bold cyan]见微 · Timbre[/bold cyan]  {dest}")
-    console.print("  [dim]直接说你想研究谁，或者研究完之后继续追问。[/dim]\n")
+    console.print("  [dim]输入名字或公司名开始，研究完可以继续追问。[/dim]\n")
 
     session_ctx = None
     while True:
