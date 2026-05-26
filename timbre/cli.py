@@ -448,7 +448,10 @@ def main_sync():
     if len(sys.argv) > 1 and sys.argv[1] == "config":
         config()
     else:
-        asyncio.run(main())
+        try:
+            asyncio.run(main())
+        except (KeyboardInterrupt, SystemExit):
+            pass
 
 
 if __name__ == "__main__":
