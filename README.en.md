@@ -124,11 +124,11 @@ All agent behavior is defined in `prompts/`. Changing how the agent researches o
 
 Timbre only surfaces public information. Compensation, true equity splits, and internal dynamics are outside its reach.
 
-LinkedIn penetration is lower in China — organizational details for domestic teams are often sparse. Funding data typically lags reality by three to six months.
+LinkedIn penetration is lower in China — organizational details for domestic teams are often sparse. Funding data typically lags reality by three to six months. These are data-source ceilings, not tool limitations.
 
-Paywalled articles require a cookies file. Without one, the agent works from search snippets only.
+Paywalled content (The Information, LatePost, 36Kr Pro, etc.) is supported via Playwright + browser cookies. Set `BROWSER_COOKIES_FILE` to unlock full article text.
 
-When a product name differs from the company name, including the founder's name improves Stage 1 accuracy.
+When a product name differs from the company name, Stage 1 runs multiple search rounds to resolve the entity automatically. You can also include the founder's name directly or attach context with `@` to further improve accuracy.
 
 ---
 
