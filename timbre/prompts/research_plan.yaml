@@ -17,7 +17,7 @@ task: |
     "dimensions": [
       {
         "name": "founder_profile",
-        "label": "Founder 画像",
+        "label": "创始人画像",
         "queries": ["query1", "query2", "query3"]
       },
       {
