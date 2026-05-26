@@ -133,7 +133,14 @@ async def synthesize(entity: dict, results_by_dimension: dict, extra_context: st
 
     p = _load("founder_profile")
     system = _load("system")["role"]
-    task = _fmt(p["task"],
+    template = p.get("output_template", "")
+    full_task = (
+        p["task"]
+        + "\n\n请严格按以下模板结构输出。输出直接从档案标题开始，"
+        + "不要有任何前言、结语、感谢语或客服用语。\n\n"
+        + template
+    )
+    task = _fmt(full_task,
         founder=entity.get("founder", ""),
         company=entity.get("company", ""),
         date=datetime.now().strftime("%Y-%m-%d"),
