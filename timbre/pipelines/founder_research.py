@@ -56,10 +56,15 @@ async def resolve_entity(input_text: str, send: Callable) -> dict:
     provider = get_provider()
     raw = await provider.react_loop(system=system, user=task, tools=[web_search], send=send, max_iterations=4)
 
-    entity = _parse_json(raw) or {
-        "founder": input_text, "founder_en": "", "company": input_text,
-        "valuation": "unknown", "confirmed": False, "confidence": "low",
-    }
+    parsed = _parse_json(raw)
+    # Treat parsed result as valid only if at least founder or company is non-null
+    if parsed and (parsed.get("founder") or parsed.get("company")):
+        entity = parsed
+    else:
+        entity = {
+            "founder": input_text, "founder_en": "", "company": input_text,
+            "valuation": "unknown", "confirmed": False, "confidence": "low",
+        }
     entity.pop("is_chinese_founder", None)
 
     send({"type": "stage", "name": "entity_resolution", "status": "done", "result": entity})
