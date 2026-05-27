@@ -126,24 +126,38 @@ async def execute_searches(plan: dict, send: Callable) -> dict:
 # ── Stage 3: Synthesis ────────────────────────────────────────────────────────
 
 async def synthesize(entity: dict, results_by_dimension: dict, extra_context: str, send: Callable) -> str:
-    send({"type": "stage", "name": "synthesis", "status": "start", "label": "综合分析中"})
+    send({"type": "stage", "name": "synthesis", "status": "start", "label": "整理搜索结果"})
 
-    sections = []
+    # Build numbered source list — every fact must trace back to one of these
+    sources: list[dict] = []
+    dim_blocks: list[str] = []
+
     for dim_name, queries in results_by_dimension.items():
-        sections.append(f"\n### {dim_name}\n")
+        excerpts: list[str] = []
         for q_result in queries:
-            sections.append(f"**搜索：{q_result['query']}**")
-            for r in q_result.get("results", [])[:5]:
-                sections.append(f"- [{r['title']}]({r['url']})\n  {r['content'][:300]}")
-    research_results = "\n".join(sections)
+            for r in q_result.get("results", [])[:4]:
+                url = r.get("url", "")
+                content = (r.get("content") or "").strip()
+                title = (r.get("title") or "").strip()
+                if not url or not content:
+                    continue
+                n = len(sources) + 1
+                sources.append({"n": n, "title": title, "url": url})
+                excerpts.append(
+                    f"[{n}] {title}\n来源：{url}\n原文：{content[:500]}"
+                )
+        if excerpts:
+            dim_blocks.append(f"### {dim_name}\n\n" + "\n\n".join(excerpts))
+
+    research_results = "\n\n".join(dim_blocks)
+    ref_list = "\n".join(f"[{s['n']}] {s['title']} — {s['url']}" for s in sources)
 
     p = _load("founder_profile")
     system = _load("system")["role"]
     template = p.get("output_template", "")
     full_task = (
         p["task"]
-        + "\n\n请严格按以下模板结构输出。输出直接从档案标题开始，"
-        + "不要有任何前言、结语、感谢语或客服用语。\n\n"
+        + "\n\n按以下模板输出，直接从标题开始：\n\n"
         + template
     )
     task = _fmt(full_task,
@@ -152,11 +166,13 @@ async def synthesize(entity: dict, results_by_dimension: dict, extra_context: st
         date=datetime.now().strftime("%Y-%m-%d"),
         valuation=entity.get("valuation", "unknown"),
         research_results=research_results,
+        ref_list=ref_list,
         extra_context=f"\n### 附加上下文\n\n{extra_context}" if extra_context else "",
     )
 
     provider = get_provider()
-    profile = await provider.react_loop(system=system, user=task, tools=SYNTHESIS_TOOLS, send=send, max_iterations=8)
+    # Single call only — no ReAct loop, no self-directed browsing
+    profile = await provider.complete(system=system, user=task)
 
     send({"type": "stage", "name": "synthesis", "status": "done"})
     return profile
