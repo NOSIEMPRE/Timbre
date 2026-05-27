@@ -10,7 +10,13 @@ _client: TavilyClient | None = None
 def _get_client() -> TavilyClient:
     global _client
     if _client is None:
-        _client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+        key = os.environ.get("TAVILY_API_KEY", "")
+        if not key:
+            raise RuntimeError(
+                "未配置 Tavily API Key，网络搜索无法使用。\n"
+                "请运行 `timbre config` 填入 Key（免费注册：app.tavily.com）。"
+            )
+        _client = TavilyClient(api_key=key)
     return _client
 
 

@@ -100,8 +100,15 @@ async def execute_searches(plan: dict, send: Callable) -> dict:
 
     async def run_query(query: str) -> dict:
         send({"type": "tool_start", "name": "web_search"})
-        result = await web_search.handler(query=query)
-        return {"query": query, "results": result.get("results", [])}
+        try:
+            result = await web_search.handler(query=query)
+            return {"query": query, "results": result.get("results", [])}
+        except RuntimeError as e:
+            # Surface config errors (e.g. missing API key) immediately
+            raise
+        except Exception as e:
+            send({"type": "search_error", "query": query, "error": str(e)})
+            return {"query": query, "results": []}
 
     tasks, dimension_map = [], {}
     for dim in plan.get("dimensions", []):

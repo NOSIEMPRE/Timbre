@@ -190,6 +190,8 @@ def make_send():
         elif t == "memory_hit":
             e = event.get("entity", {})
             console.print(f"\n  [yellow]↩[/yellow]  [dim]发现已有记录：{e.get('founder')} · {e.get('company')}（{e.get('last_researched', '')}）[/dim]")
+        elif t == "search_error":
+            console.print(f"\n  [red]✗[/red]  [dim]搜索失败：{event.get('error', '')}[/dim]")
         elif t == "context_error":
             console.print(f"\n  [yellow]⚠[/yellow]  [dim]读取失败：{event.get('path')} — {event.get('error')}[/dim]")
         elif t == "eval":
