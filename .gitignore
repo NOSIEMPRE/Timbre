@@ -1,14 +1,20 @@
-node_modules/
+# Environment
 .env
 *.log
 .DS_Store
-profiles/*.md
-memory/store.json
-memory/timbre.db
-timbre/memory/timbre.db
+
+# Python
 __pycache__/
 *.py[cod]
 .venv/
 *.egg-info/
 dist/
 build/
+
+# User data (stored in ~/.timbre/)
+timbre/memory/timbre.db
+timbre/memory/timbre.db-shm
+timbre/memory/timbre.db-wal
+
+# IDE
+.claude/

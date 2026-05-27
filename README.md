@@ -2,66 +2,207 @@
   <b>中文</b> &nbsp;·&nbsp; <a href="README.en.md">EN</a>
 </div>
 
-# 见微 · Timbre
-
-一级市场的信息获取从来不缺数据，缺的是把碎片拼成完整图像的能力。
-
-一个 founder 的世界观藏在三年前的播客访谈里，组织架构的变化写在 LinkedIn 的职位更新里，战略重心的转移隐约体现在招聘 JD 的措辞里。这些信息都是公开的，但没有人有时间把它们系统地找齐、读懂、拼在一起。
-
-Timbre 做的就是这件事。给它一个输入——创始人姓名、公司名或核心产品名——它会自己找到对的人，从四个维度展开全球调研，输出一份有判断力的情报档案，而不只是数据的堆砌。
+<div align="center">
+  <h1>见微 · Timbre</h1>
+  <p><strong>一级市场的 Founder Intelligence System</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/python-3.9+-blue?style=flat-square" alt="Python 3.9+">
+    <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License">
+    <img src="https://img.shields.io/badge/模型-任意_OpenAI_兼容接口-8a2be2?style=flat-square" alt="Model">
+    <img src="https://img.shields.io/badge/搜索-Tavily-orange?style=flat-square" alt="Tavily">
+    <img src="https://img.shields.io/badge/适用于-Claude_·_Cursor_·_Codex-1B2A4A?style=flat-square" alt="Works with">
+  </p>
+</div>
 
 ---
 
-## 工作原理
+一个**越用越好用**的 Founder Intelligence System，面向一级市场投资团队。
 
-四个阶段，不是一个大循环。
+大多数工具给你一次性的答案。Timbre 构建的是知识图谱。每一次 `founder-research` 都向库里写入一个 Markdown 节点，investor 名称自动转为 `[[Benchmark]]`、`[[红杉]]` 等 Obsidian wiki link。研究 20 个项目之后，Graph View 就能呈现任何单次搜索都看不到的东西：*谁在押这个赛道*、*哪些 founder 共同被某个 LP 支持*。这种跨 session 的复利效应，才是真正的核心价值。
+
+---
+
+## 三层系统，协同工作
 
 ```
-Stage 1   实体识别    ReAct loop      从任意输入确认创始人和公司
-Stage 2a  制定计划    单次 LLM 调用   生成约 12 条精准搜索 query，覆盖 4 个维度
-Stage 2b  并行搜索    Promise.all     所有 query 同时运行，直接调用 Tavily
-Stage 3   综合分析    ReAct + 工具    撰写档案；必要时主动获取完整文章
+发现 ──────────────▶  深研 ──────────────▶  沉淀
+vc-sourcing           founder-research       Obsidian wiki
+主动扫描公开网络        结构化 VC 尽调档案      [[investor]] 图谱
+Pre-Seed / Seed        8节 Markdown + 来源     Graph View 聚类
+      ▲                                             │
+      └─────────────────────────────────────────────┘
+                    越用越好用
 ```
 
-Stage 3 可以在综合分析过程中调用 `browse_url`，获取付费媒体的完整文章——前提是你有订阅并配置了 cookie。
+**vc-sourcing** — 主动发现早期项目。不需要公司名，只需一个赛道。并行扫描 HackerNews Show HN、YC W25/S25 批次、ProductHunt 新品、TechCrunch 早期报道、GitHub trending，输出按 vc_appeal 排序的项目列表。
+
+**founder-research** — 实体识别 + 并行搜索 + 综合分析。生成完整的尽调档案，含 `[N]` 来源标注、`P0/P1/P2` 风险分级、Playwright 付费内容访问。保存至 `~/.timbre/profiles/` 或直接落进 Obsidian vault。
+
+**Stage 2.5 创始人补全** — 当 sourcing 结果中 `founder: unknown` 时，自动对 LinkedIn、Crunchbase、TechCrunch 发起定向搜索，并经过多层名称清洗验证。实测：创始人识别率从约 40% 提升至约 78%。
 
 ---
 
-## 能力
+## 三种使用方式
 
-**输入**
-- 中英文网络搜索（Tavily）
-- 本地文件 `@路径` — pitch deck、会议笔记、PDF、Markdown
-- 指定 URL `@https://...` — 包括付费墙后的文章
-- 跨 session 记忆 — 之前调研过的 founder 会自动被识别
+| 方式 | 配置 | 适合场景 |
+|------|------|---------|
+| **粘贴 `SKILL.md`** | 零安装 | Claude.ai Projects、Claude Code、Cursor、Codex——任意 system prompt |
+| **本地 CLI** | `pipx install` + 2 个 API Key | 日常调研工作流、Obsidian 集成 |
+| **Anthropic API Tool** | `from timbre.skill_api import TOOLS` | 嵌入自有产品 |
 
-**输出**
-- 档案结构：核心判断 · Founder 画像 · 创始团队 · 产品与商业 · 融资信息 · 信息源
-- 带 YAML frontmatter 的 Markdown（兼容 Obsidian Dataview 插件）
-- 自动添加 wiki 链接，支持 Obsidian graph view
-- 存入 `profiles/` 或直接落在 Obsidian vault
+### 方式一：零安装（粘贴至任意 Claude 环境）
 
----
+复制 [`SKILL.md`](SKILL.md) 的全部内容，粘贴至：
 
-## 安装
+- **Claude.ai** → Project Instructions
+- **Claude Code** → `CLAUDE.md`
+- **Cursor / Codex** → system prompt 或 rules 文件
+
+Claude 本身即成为执行引擎。无需安装依赖，不受本地模型能力限制。SKILL.md 是一份纯行为规范——触发条件、搜索策略、输出格式——任意 Claude 环境读取后直接执行。
+
+### 方式二：本地 CLI
 
 ```bash
 pipx install git+https://github.com/NOSIEMPRE/Timbre.git
-playwright install chromium
+timbre config     # 交互式配置向导：选择模型提供商、填入 API Key、设置 Obsidian 路径
+```
+
+> 没有 `pipx`？→ `brew install pipx`（Mac）或 `pip install pipx`
+
+支持所有兼容 OpenAI 接口的模型：
+
+| 提供商 | Base URL |
+|--------|----------|
+| Anthropic Claude | 无需 Base URL，直接 SDK |
+| DeepSeek | `https://api.deepseek.com/v1` |
+| 通义千问 Qwen | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| 智谱 GLM | `https://open.bigmodel.cn/api/paas/v4` |
+| Kimi（Moonshot AI） | `https://api.moonshot.cn/v1` |
+| Ollama（本地部署） | `http://localhost:11434/v1` |
+
+### 方式三：Anthropic API Tool
+
+```python
+import anthropic
+from timbre.skill_api import TOOLS, dispatch_tool_call
+
+client = anthropic.Anthropic()
+
+# TOOLS 直接传入 messages.create()
+response = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=4096,
+    tools=TOOLS,
+    messages=[{"role": "user", "content": "帮我找最近值得关注的早期 AI infrastructure 项目"}],
+)
+
+# 将 tool_use 路由回 pipeline
+for block in response.content:
+    if block.type == "tool_use":
+        result = await dispatch_tool_call(block.name, block.input)
+```
+
+完整 agentic loop 示例（含多轮 sourcing → 深研流程）见 [`example_claude_api.py`](example_claude_api.py)。
+
+---
+
+## 效果演示
+
+### vc-sourcing
+
+```
+timbre › 帮我找最近值得关注的早期 AI infrastructure 项目
+
+  早期项目雷达  AI Infrastructure  (6 个结果)
+  ─────────────────────────────────────────────────────────
+
+  ▲  1. Miyagi Labs          Seed · 2024 · EdTech / AI 辅导
+       创始人：Tyrone Davis III, Guang Cui
+       为考试备考提供人工智能辅导老师
+       → 双创始人可溯源，YC W25，高频刚需赛道，东南亚/印度市场
+       信号：YC W25 · 国际化创始团队 · K12 刚需
+
+  ▲  2. MiroLumari           Seed · 2024 · No-code 企业工具
+       创始人：Eshani Mehta
+       提供无需编码的内部应用创建平台
+       → AI-native Retool，企业买方意愿已由市场验证
+       信号：YC W25 · B2B SaaS · 企业软件白地
+
+  ●  3. Emergent             Seed · 2024 · AI 代码生成
+       创始人：unknown  ← Stage 2.5 触发定向搜索…
+       生成并部署生产应用的自主编码代理
+       信号：YC W25 · TechCrunch 报道 · GitHub trending
+
+  ─────────────────────────────────────────────────────────
+  输入数字深研某个项目，或继续提问缩小范围。
+
+timbre › 1
+  → 开始研究 Tyrone Davis III Miyagi Labs …
+```
+
+### founder-research
+
+```
+timbre › 研究一下梁文锋
+
+  ● Stage 1  实体识别…
+  ● Stage 2a 制定调研计划…   (生成 12 条 query / 4 个维度)
+  ● Stage 2b 并行搜索…       (12 线程同步运行)
+  ● Stage 3  综合分析…
+
+  ✓  档案已保存  →  ~/.timbre/profiles/deepseek-liang-wenfeng.md
+     质量评分：91 / 100
+```
+
+档案片段：
+
+```markdown
+---
+founder: "梁文锋"
+founder_en: "Liang Wenfeng"
+company: "DeepSeek / 幻方科技"
+stage: "独立运营"
+---
+
+## 核心判断
+
+梁文锋是国内极少数同时具备量化金融背景和 LLM 研究能力的创始人……[1][3]
+
+## 风险分级
+
+P0  监管风险：模型能力公开展示受国内审查政策约束
+P1  人才留存：核心研究员在顶级实验室报价面前的稳定性
+
+## 信息源
+
+[1] https://mp.weixin.qq.com/s/...
+[3] https://www.theinformation.com/articles/...
+```
+
+---
+
+## 安装与配置
+
+```bash
+pipx install git+https://github.com/NOSIEMPRE/Timbre.git
 timbre config
 ```
 
-三行搞定。`timbre config` 会引导你交互式填入 API Key，不需要手动编辑配置文件。
+配置保存在 `~/.timbre/.env`，不写入 repo。
 
-> 没有 pipx？Mac 上运行 `brew install pipx`，其他平台运行 `pip install pipx`。
+| 变量 | 必填 | 说明 |
+|------|------|------|
+| `TAVILY_API_KEY` | ✅ | 网络搜索 — [app.tavily.com](https://app.tavily.com)（有免费额度） |
+| `ANTHROPIC_API_KEY` | ✅ 二选一 | Claude 系列模型 |
+| `OPENAI_API_KEY` | ✅ 二选一 | DeepSeek / Qwen / Kimi / Ollama 等 |
+| `OPENAI_BASE_URL` | 配合上条 | 如 `https://api.deepseek.com/v1` |
+| `MODEL` | 配合上条 | 如 `deepseek-chat`、`qwen-max`、`llama3.1:8b` |
+| `OBSIDIAN_VAULT_PATH` | 可选 | 档案直接落进 Obsidian vault |
+| `OBSIDIAN_SUBFOLDER` | 可选 | 默认 `Timbre` |
+| `BROWSER_COOKIES_FILE` | 可选 | Netscape 格式 cookies，用于付费内容访问 |
+| `LANGFUSE_SECRET_KEY` | 可选 | 可观测性追踪 — [langfuse.com](https://langfuse.com) |
 
-支持所有兼容 OpenAI 接口的模型——DeepSeek、通义千问、智谱 GLM、Kimi、Ollama 本地部署等。
-
-**访问付费内容** — 用 Chrome 扩展（*Get cookies.txt LOCALLY*）导出 cookies.txt，在 config 里配置路径。
-
-**Obsidian 集成** — 设置 `OBSIDIAN_VAULT_PATH`，档案直接落进你的 vault。
-
-**可观测性** — 设置 `LANGFUSE_SECRET_KEY` + `LANGFUSE_PUBLIC_KEY` 开启链路追踪，不配置则零影响。
+**付费内容访问**（晚点、The Information、36Kr Pro 等）：用 Chrome 插件 *Get cookies.txt LOCALLY* 导出 Netscape 格式 cookies，设置 `BROWSER_COOKIES_FILE` 即可。
 
 ---
 
@@ -71,20 +212,33 @@ timbre config
 timbre
 ```
 
-启动后直接用自然语言输入，不需要记命令。
+直接用自然语言输入，不需要记命令。
 
 ```
-timbre › 帮我研究一下 xxx 公司的创始人
-timbre › xx 公司的创始人背景是什么
-timbre › 他的联创团队呢              ← 追问，基于刚才的研究回答
-timbre › 融资情况能详细说说吗        ← 继续追问
-timbre › 再研究一下 xxx，参考这个 @./meeting-notes.md
-timbre › xx 公司 @https://www.theinformation.com/articles/...
+# 主动发现早期项目
+timbre › 帮我找最近值得关注的早期 AI 项目
+timbre › 有没有 B2B SaaS 方向的新公司
+timbre › sourcing healthcare pre-seed
+
+# 深度研究创始人 / 公司
+timbre › 研究一下梁文锋
+timbre › DeepSeek 的创始人背景
+timbre › xx 公司 @./pitch-deck.pdf @https://techcrunch.com/...
+
+# 基于当前档案追问
+timbre › 他的联创团队背景呢
+timbre › 融资情况能详细说说吗
+
+# 查询投资机构持仓
+timbre › 红杉投了哪些 AI 公司
+timbre › Benchmark 的 AI portfolio
+
+# 档案与记忆
 timbre › 查看我保存的档案
 timbre › 退出
 ```
 
-每次查询前有一次轻量意图识别，Timbre 会判断你是在发起新研究、追问当前档案，还是想做其他操作。`@路径` 和 `@链接` 可以在任意查询中附加，会在综合分析前注入。
+每次输入前有一次轻量意图识别，自动路由至 sourcing、research、追问、investor 查询或记忆检索，无需切换模式。
 
 ---
 
@@ -92,47 +246,59 @@ timbre › 退出
 
 ```
 Timbre/
-├── cli.py                          交互式 CLI（asyncio + Rich）
-├── observe.py                      Langfuse 追踪封装（未配置时零开销）
-├── pipelines/
-│   └── founder_research.py         四阶段 pipeline
-├── providers/
-│   ├── anthropic_provider.py
-│   ├── openai_provider.py          任何兼容 OpenAI 接口的模型
-│   └── __init__.py                 根据环境变量自动选择 provider
-├── tools/
-│   ├── registry.py                 Tool 数据类 + RESEARCH/SYNTHESIS 注册表
-│   ├── web_search.py               Tavily 搜索
-│   ├── read_file.py                PDF、MD、TXT、CSV 解析
-│   └── browse_url.py               Playwright（付费内容访问）
-├── memory/
-│   └── store.py                    SQLite + FTS5 跨 session 实体记忆
-├── prompts/
-│   ├── system.yaml                 研究员人设
-│   ├── entity_resolution.yaml      Stage 1
-│   ├── research_plan.yaml          Stage 2a
-│   └── founder_profile.yaml        Stage 3 综合分析模板
-├── eval/
-│   └── quality_check.py
-└── profiles/                       已保存档案（已 gitignore）
+├── SKILL.md                         行为规范文档——粘贴至任意 Claude 环境即可使用
+├── example_claude_api.py            完整 Anthropic API agentic loop 示例
+├── deliverable.html                 互动版 VC sourcing 演示报告
+├── timbre/
+│   ├── cli.py                       交互式 CLI（asyncio + Rich）
+│   ├── skill_api.py                 Anthropic API Tool 定义 + 分发器
+│   ├── observe.py                   Langfuse 追踪封装（未配置时零开销）
+│   ├── pipelines/
+│   │   ├── sourcing.py              vc-sourcing：多源扫描 + Stage 2.5 创始人补全
+│   │   ├── founder_research.py      founder-research：四阶段 pipeline
+│   │   └── investor_research.py     投资机构持仓查询
+│   ├── providers/
+│   │   ├── __init__.py              根据环境变量自动选择 provider
+│   │   ├── anthropic_provider.py
+│   │   └── openai_provider.py       任何兼容 OpenAI 接口的模型
+│   ├── tools/
+│   │   ├── registry.py              Tool 数据类 + 注册表
+│   │   ├── web_search.py            Tavily 搜索
+│   │   ├── read_file.py             PDF、MD、TXT、CSV 解析
+│   │   └── browse_url.py            Playwright（付费内容访问）
+│   ├── memory/
+│   │   └── store.py                 SQLite FTS5 跨 session 记忆（存于 ~/.timbre/）
+│   ├── eval/
+│   │   └── quality_check.py         0–100 分输出质量评分
+│   └── prompts/                     所有 Agent 行为定义在这里
+│       ├── system.yaml              研究员人设
+│       ├── entity_resolution.yaml   Stage 1 提示词
+│       ├── research_plan.yaml       Stage 2a 提示词
+│       └── founder_profile.yaml     Stage 3 综合分析模板
 ```
 
-所有 Agent 行为都在 `prompts/` 目录里定义。修改调研方式或输出风格，不需要改任何业务逻辑代码。
+> 所有 Agent 行为都在 `prompts/` 里定义。修改调研方式或输出风格，只需改 YAML，不需要动业务代码。
 
 ---
 
 ## 已知局限
 
-Timbre 只能访问公开信息。薪酬结构、内部管理矛盾不在覆盖范围内。股权结构和融资细节在天眼查、企查查、Crunchbase、PitchBook 等平台有付费数据——配置对应平台的 cookie 后，browse_url 可直接获取。
+Timbre 只能访问**公开信息**。薪酬结构、内部管理矛盾不在覆盖范围内。股权结构和融资细节在天眼查、企查查、Crunchbase、PitchBook 等平台有付费数据——配置对应平台的 cookie 后，`browse_url` 可直接获取。
 
-LinkedIn 在中国的渗透率偏低，部分国内团队的组织信息会不完整。融资数据通常比实际晚披露 3 到 6 个月。这两点是数据源本身的天花板，工具层面无法解决。
+LinkedIn 在国内渗透率偏低，部分国内团队的组织信息会不完整。融资数据通常晚披露 3–6 个月。这两点是数据源本身的上限，工具层面无法解决。
 
-付费媒体（晚点、The Information、36Kr Pro 等）已通过 Playwright + 浏览器 cookie 支持，配置 `BROWSER_COOKIES_FILE` 即可获取完整正文。
-
-产品名与公司名不一致时，Stage 1 会通过多轮搜索自动确认实体；也可以在输入时直接附上创始人姓名或 `@` 补充文档进一步提高准确率。
+产品名与公司名不一致时（如"Claude" vs"Anthropic"），Stage 1 会自动多轮搜索消歧，也可以直接附上创始人姓名或 `@链接` 加速识别。
 
 ---
 
 ## Tech Stack
 
-Python · asyncio · Anthropic Claude · Tavily · Playwright · SQLite · Rich · Langfuse (optional)
+Python 3.9+ · asyncio · [Tavily](https://tavily.com) · Playwright · SQLite FTS5 · [Rich](https://github.com/Textualize/rich) · [Langfuse](https://langfuse.com)（可选）
+
+模型：任意 OpenAI 兼容接口 — Anthropic Claude · DeepSeek · Qwen · Kimi · GLM · Ollama
+
+---
+
+<div align="center">
+  <sub>为一级市场 sourcing 和尽调而构建，与任何基金无关联。</sub>
+</div>

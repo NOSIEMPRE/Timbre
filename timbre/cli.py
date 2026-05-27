@@ -21,8 +21,6 @@ from timbre.memory.store import remember, list_all
 from timbre.providers import get_provider
 from timbre.eval.quality_check import quality_check
 
-console = Console()
-
 # ── Data directory ────────────────────────────────────────────────────────────
 
 def get_output_dir() -> Path:
@@ -107,7 +105,7 @@ def add_wiki_links(profile: str, entity: dict) -> str:
 # ── Intent classification ─────────────────────────────────────────────────────
 
 async def classify_intent(text: str, has_session: bool) -> str:
-    VALID = {"research", "followup", "investor", "list", "memory", "help", "exit"}
+    VALID = {"research", "followup", "investor", "sourcing", "list", "memory", "help", "exit"}
     words = text.strip().split()
 
     # Fast-path: unambiguous exit commands
@@ -118,6 +116,15 @@ async def classify_intent(text: str, has_session: bool) -> str:
     INVESTOR_SIGNALS = {"投了", "portfolio", "投资组合", "持仓", "被投", "投资了", "投的公司", "投过哪些"}
     if any(s in text for s in INVESTOR_SIGNALS):
         return "investor"
+
+    # Fast-path: proactive sourcing / discovery
+    SOURCING_SIGNALS = {
+        "找项目", "发现项目", "主动找", "主动发现", "有哪些新", "有什么新", "值得关注",
+        "早期项目", "pre-seed", "preseed", "新项目", "新公司", "最近有什么",
+        "帮我找", "发掘", "sourcing", "scan", "discover",
+    }
+    if any(s in text.lower() for s in SOURCING_SIGNALS):
+        return "sourcing"
 
     # Fast-path: short input with no question mark and no followup signals
     # → almost certainly a name or company, regardless of session state
@@ -137,6 +144,7 @@ async def classify_intent(text: str, has_session: bool) -> str:
              "- research   （想研究某个创始人或公司）\n"
              "- followup   （对刚才研究结果的追问，只有 session 里有研究结果时才选这个）\n"
              "- investor   （想查询某家投资机构投了哪些公司）\n"
+             "- sourcing   （主动发现/发掘早期创业项目，没有具体公司名）\n"
              "- list       （查看已保存档案）\n"
              "- memory     （查看历史研究记录）\n"
              "- help       （需要帮助）\n"
@@ -207,6 +215,10 @@ def make_send():
             console.print(f"\n  [red]✗[/red]  [dim]搜索失败：{event.get('error', '')}[/dim]")
         elif t == "context_error":
             console.print(f"\n  [yellow]⚠[/yellow]  [dim]读取失败：{event.get('path')} — {event.get('error')}[/dim]")
+        elif t == "sourcing_raw":
+            count = event.get("count", 0)
+            queries = event.get("queries", 0)
+            console.print(f"\n  [dim]已检索 {queries} 条搜索 → 收集 {count} 条原始结果[/dim]")
         elif t == "eval":
             m = event.get("metrics", {})
             score = m.get("score", 0)
@@ -269,6 +281,85 @@ async def handle_investor_query(investor: str, session_ctx: dict | None) -> dict
     return {**(session_ctx or {}), "investor_list": companies, "investor_name": investor}
 
 
+# ── Sourcing handler ─────────────────────────────────────────────────────────
+
+def _extract_theme(text: str) -> str:
+    """
+    Pull optional vertical/theme keyword from a sourcing request.
+    Returns "" if no meaningful vertical is found (defaults to general AI/tech scan).
+    """
+    # Strip trigger phrases and Chinese filler
+    cleaned = re.sub(
+        r"帮我找|主动发现|主动|发掘|找项目|发现项目|有哪些新|有什么新|有什么好的"
+        r"|值得关注|最近有什么|最近|有没有|有哪些"
+        r"|sourcing|scan|discover|pre-seed|preseed"
+        r"|一些|一批|新的|新|早期的|早期|好的|方向的|方向|的公司|的|公司|项目|startup|startups",
+        " ", text, flags=re.IGNORECASE,
+    ).strip()
+    # Remove stray punctuation and squash spaces
+    cleaned = re.sub(r"[？?，,。.\s]+", " ", cleaned).strip()
+    # Keep only tokens longer than 1 char to drop stray Chinese characters
+    words = [w for w in cleaned.split() if len(w) > 1]
+    theme = " ".join(words).strip()
+    # Drop if only generic/default terms remain
+    if theme.lower() in ("ai", "tech", "科技", "人工智能", ""):
+        return ""
+    return theme
+
+
+_APPEAL_ICON = {"高": "[bold green]▲[/bold green]", "中": "[yellow]●[/yellow]", "低": "[dim]▽[/dim]"}
+
+
+async def handle_sourcing_query(text: str, session_ctx: dict | None) -> dict | None:
+    from timbre.pipelines.sourcing import run_sourcing
+
+    theme = _extract_theme(text)
+    send = make_send()
+
+    console.print()
+    projects = await run_sourcing(theme, send)
+
+    if not projects:
+        console.print("\n  [yellow]⚠[/yellow]  本次扫描未发现符合条件的早期项目，请稍后再试或换一个主题\n")
+        return session_ctx
+
+    label = f"  [bold]早期项目雷达[/bold]  [dim]{theme or 'AI / 科技'}[/dim]  " \
+            f"[dim]({len(projects)} 个结果)[/dim]\n"
+    console.print(label)
+
+    for i, p in enumerate(projects, 1):
+        appeal = str(p.get("vc_appeal", ""))
+        icon = _APPEAL_ICON.get(appeal, "[dim]·[/dim]")
+        stage = p.get("stage", "")
+        year = p.get("founded_year", "")
+        market = p.get("market", "")
+        meta_parts = [x for x in [stage, year, market] if x and x != "unknown"]
+        meta = "  [dim]" + " · ".join(meta_parts) + "[/dim]" if meta_parts else ""
+
+        console.print(f"  {icon} [cyan]{i:2}.[/cyan] [bold]{escape(p.get('name', ''))}[/bold]{meta}")
+
+        founder = p.get("founder", "")
+        if founder and founder != "unknown":
+            console.print(f"      [dim]创始人：{escape(founder)}[/dim]")
+
+        one_liner = p.get("one_liner", "")
+        if one_liner:
+            console.print(f"      {escape(one_liner)}")
+
+        why = p.get("why", "")
+        if why:
+            console.print(f"      [dim italic]→ {escape(why)}[/dim italic]")
+
+        signals = p.get("signals", [])
+        if signals:
+            console.print(f"      [dim]信号：{' · '.join(signals[:3])}[/dim]")
+
+        console.print()
+
+    console.print("  [dim]输入编号深度调研，输入其他继续[/dim]\n")
+    return {**(session_ctx or {}), "sourcing_list": projects}
+
+
 # ── Main query handler ────────────────────────────────────────────────────────
 
 async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
@@ -285,6 +376,22 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
             console.print(f"\n  [dim]→ 开始研究 {selected}[/dim]")
             text = selected
         # Fall through to research with the company name
+
+    # ── Numbered selection from sourcing list ─────────────────────────────────
+    if session_ctx and session_ctx.get("sourcing_list") and text.isdigit():
+        projects = session_ctx["sourcing_list"]
+        idx = int(text) - 1
+        if 0 <= idx < len(projects):
+            p = projects[idx]
+            # Prefer "founder + company" as the research target; fall back to company name
+            founder = p.get("founder", "")
+            company = p.get("name", "")
+            if founder and founder != "unknown":
+                text = f"{founder} {company}".strip()
+            else:
+                text = company
+            console.print(f"\n  [dim]→ 开始研究 {text}[/dim]")
+        # Fall through to research
 
     console.print()
     console.print("  [dim]…[/dim]", end="\r")
@@ -305,12 +412,20 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
 
     if intent == "help":
         console.print("""
-  [bold]直接说你想研究谁，不用记命令。[/bold]
+  [bold]直接说你想做什么，不用记命令。[/bold]
 
-  [dim]发起研究[/dim]
+  [dim]主动发现早期项目[/dim]
+    帮我找最近值得关注的早期 AI 项目
+    有没有 B2B SaaS 方向的新公司
+    发掘一些 Pre-Seed 的 AI infrastructure 项目
+
+  [dim]深度研究创始人 / 公司[/dim]
     帮我看看 xx 公司的创始人
     某某 AI 公司 CEO 的背景
     xx 创始人 @./尽调材料.pdf @https://...
+
+  [dim]查询投资机构持仓[/dim]
+    xx 基金投过哪些 AI 公司
 
   [dim]追问当前档案[/dim]
     他的融资情况能详细说说吗
@@ -326,6 +441,9 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
         investor = re.sub(r"投了.*|portfolio.*|投资组合.*|持仓.*|被投.*|投资了.*|投的公司.*|投过哪些.*", "", text, flags=re.IGNORECASE).strip()
         investor = investor or text.strip()
         return await handle_investor_query(investor, session_ctx)
+
+    if intent == "sourcing":
+        return await handle_sourcing_query(text, session_ctx)
 
     if intent == "followup" and session_ctx:
         send = make_send()
@@ -373,7 +491,7 @@ async def main():
         else f"[dim]~/.timbre/profiles/[/dim]"
 
     console.print(f"\n  [bold cyan]见微 · Timbre[/bold cyan]  {dest}")
-    console.print("  [dim]输入创始人姓名或公司名，开始调研。[/dim]\n")
+    console.print("  [dim]输入创始人 / 公司名研究，或说「帮我找早期 AI 项目」主动发现。[/dim]\n")
 
     session_ctx = None
     while True:
