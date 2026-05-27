@@ -9,8 +9,9 @@ task: |
   公司：{company}
   估值：{valuation}
 
-  输出一个 JSON 对象，包含四个维度，每个维度 3-4 条搜索 query。
+  输出一个 JSON 对象，包含六个维度，每个维度 3-4 条搜索 query。
   query 要具体、有针对性，中英文各占一半，覆盖不同信息源。
+  对英文公司/人名，query 中加引号避免歧义（如 "Clay" startup founder）。
 
   格式如下：
   {
@@ -33,6 +34,16 @@ task: |
       {
         "name": "funding",
         "label": "融资信息",
+        "queries": ["query1", "query2", "query3"]
+      },
+      {
+        "name": "traction",
+        "label": "业务牵引力",
+        "queries": ["query1", "query2", "query3"]
+      },
+      {
+        "name": "news",
+        "label": "近期动态",
         "queries": ["query1", "query2", "query3"]
       }
     ]
