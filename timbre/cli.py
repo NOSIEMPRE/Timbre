@@ -107,12 +107,17 @@ def add_wiki_links(profile: str, entity: dict) -> str:
 # ── Intent classification ─────────────────────────────────────────────────────
 
 async def classify_intent(text: str, has_session: bool) -> str:
-    VALID = {"research", "followup", "list", "memory", "help", "exit"}
+    VALID = {"research", "followup", "investor", "list", "memory", "help", "exit"}
     words = text.strip().split()
 
     # Fast-path: unambiguous exit commands
     if text.strip().lower() in ("exit", "quit", "退出", "再见", "拜拜"):
         return "exit"
+
+    # Fast-path: investor portfolio query
+    INVESTOR_SIGNALS = {"投了", "portfolio", "投资组合", "持仓", "被投", "投资了", "投的公司", "投过哪些"}
+    if any(s in text for s in INVESTOR_SIGNALS):
+        return "investor"
 
     # Fast-path: short input with no question mark and no followup signals
     # → almost certainly a name or company, regardless of session state
@@ -131,6 +136,7 @@ async def classify_intent(text: str, has_session: bool) -> str:
              "判断用户意图，从以下选项中选一个输出：\n"
              "- research   （想研究某个创始人或公司）\n"
              "- followup   （对刚才研究结果的追问，只有 session 里有研究结果时才选这个）\n"
+             "- investor   （想查询某家投资机构投了哪些公司）\n"
              "- list       （查看已保存档案）\n"
              "- memory     （查看历史研究记录）\n"
              "- help       （需要帮助）\n"
@@ -234,12 +240,51 @@ def list_memory():
         console.print(f"  {dot} {e.get('founder')} · {e.get('company')}  [dim]{e.get('last_researched', '')}[/dim]")
 
 
+# ── Investor portfolio handler ────────────────────────────────────────────────
+
+async def handle_investor_query(investor: str, session_ctx: dict | None) -> dict | None:
+    from timbre.pipelines.investor_research import research_investor_portfolio
+
+    send = make_send()
+    companies = await research_investor_portfolio(investor, send)
+
+    if not companies:
+        console.print(f"\n  [yellow]⚠[/yellow]  未找到 {investor} 的投资组合数据\n")
+        return session_ctx
+
+    console.print(f"\n  [bold]{investor}[/bold]  AI 投资组合  [dim]({len(companies)} 家)[/dim]\n")
+    for i, c in enumerate(companies, 1):
+        stage = c.get("stage", "")
+        amount = c.get("amount", "")
+        year = c.get("year", "")
+        meta_parts = [p for p in [stage, amount, year] if p and p != "unknown"]
+        meta = "  [dim]" + " · ".join(meta_parts) + "[/dim]" if meta_parts else ""
+        console.print(f"  [cyan]{i:2}.[/cyan] [bold]{c.get('name', '')}[/bold]{meta}")
+        desc = c.get("description", "")
+        if desc:
+            console.print(f"      [dim]{desc}[/dim]")
+    console.print()
+    console.print("  [dim]输入编号或公司名继续研究，输入其他内容跳过[/dim]\n")
+
+    return {**(session_ctx or {}), "investor_list": companies, "investor_name": investor}
+
+
 # ── Main query handler ────────────────────────────────────────────────────────
 
 async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
     text = text.strip()
     if not text:
         return session_ctx
+
+    # ── Numbered selection from investor list ─────────────────────────────────
+    if session_ctx and session_ctx.get("investor_list") and text.isdigit():
+        companies = session_ctx["investor_list"]
+        idx = int(text) - 1
+        if 0 <= idx < len(companies):
+            selected = companies[idx]["name"]
+            console.print(f"\n  [dim]→ 开始研究 {selected}[/dim]")
+            text = selected
+        # Fall through to research with the company name
 
     console.print()
     console.print("  [dim]…[/dim]", end="\r")
@@ -275,6 +320,12 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
     查看档案  ·  历史记录  ·  退出
 """)
         return session_ctx
+
+    if intent == "investor":
+        # Extract investor name: strip signal words to get bare name
+        investor = re.sub(r"投了.*|portfolio.*|投资组合.*|持仓.*|被投.*|投资了.*|投的公司.*|投过哪些.*", "", text, flags=re.IGNORECASE).strip()
+        investor = investor or text.strip()
+        return await handle_investor_query(investor, session_ctx)
 
     if intent == "followup" and session_ctx:
         send = make_send()
