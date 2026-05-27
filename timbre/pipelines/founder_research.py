@@ -73,20 +73,64 @@ async def resolve_entity(input_text: str, send: Callable) -> dict:
 
 # ── Stage 2a: Research Plan ───────────────────────────────────────────────────
 
+def _fallback_plan(founder: str, company: str) -> dict:
+    """Hardcoded plan used when the model fails to generate valid JSON."""
+    f = f'"{founder}"' if founder else company
+    c = f'"{company}"' if company else founder
+    return {"dimensions": [
+        {"name": "founder_profile", "label": "创始人画像", "queries": [
+            f"{f} founder background biography",
+            f"{c} CEO co-founder profile",
+            f"{f} {c} interview podcast",
+        ]},
+        {"name": "team", "label": "创始团队图谱", "queries": [
+            f"{c} co-founder team leadership",
+            f"{c} executive team management",
+        ]},
+        {"name": "product", "label": "产品与商业模式", "queries": [
+            f"{c} product features how it works",
+            f"{c} pricing business model revenue",
+        ]},
+        {"name": "funding", "label": "融资信息", "queries": [
+            f"{c} funding round investment crunchbase",
+            f"{c} valuation investors series",
+        ]},
+        {"name": "traction", "label": "业务牵引力", "queries": [
+            f"{c} ARR revenue customers growth metrics",
+            f"{c} traction users market share",
+        ]},
+        {"name": "news", "label": "近期动态", "queries": [
+            f"{c} news announcement 2024 2025",
+            f"{f} {c} latest update",
+        ]},
+    ]}
+
+
 async def plan_research(entity: dict, send: Callable) -> dict:
     send({"type": "stage", "name": "research_plan", "status": "start", "label": "制定搜索计划"})
 
+    founder = entity.get("founder", "")
+    company = entity.get("company", "")
+
     p = _load("research_plan")
     task = _fmt(p["task"],
-        founder=entity.get("founder", ""),
+        founder=founder,
         founder_en=entity.get("founder_en", "") or "",
-        company=entity.get("company", ""),
+        company=company,
         valuation=entity.get("valuation", "unknown"),
     )
 
     provider = get_provider()
     raw = await provider.complete(system=p["system"], user=task)
-    plan = _parse_json(raw) or {"dimensions": []}
+    parsed = _parse_json(raw)
+
+    # Use model plan only if it produced non-empty dimensions with queries
+    if parsed and parsed.get("dimensions") and any(
+        d.get("queries") for d in parsed["dimensions"]
+    ):
+        plan = parsed
+    else:
+        plan = _fallback_plan(founder, company)
 
     send({"type": "plan_ready", "plan": plan})
     send({"type": "stage", "name": "research_plan", "status": "done"})
