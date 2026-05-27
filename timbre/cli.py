@@ -66,10 +66,17 @@ def build_frontmatter(entity: dict) -> str:
     except Exception:
         pass
 
-    lines = ["---", f'founder: "{entity.get("founder", "")}"']
-    if entity.get("founder_en") and entity["founder_en"] != entity.get("founder"):
-        lines.append(f'founder_en: "{entity["founder_en"]}"')
-    lines += [f'company: "{entity.get("company", "")}"']
+    founder = entity.get("founder") or ""
+    founder_en = entity.get("founder_en") or ""
+    company = entity.get("company") or ""
+
+    lines = ["---"]
+    # Only write founder if it's distinct from company (avoids "founder: Clay, company: Clay")
+    if founder and founder != company:
+        lines.append(f'founder: "{founder}"')
+    if founder_en and founder_en != founder and founder_en != company:
+        lines.append(f'founder_en: "{founder_en}"')
+    lines.append(f'company: "{company}"')
     if val:
         lines.append(f'valuation: "{val}"')
     lines += [

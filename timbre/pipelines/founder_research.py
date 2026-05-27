@@ -67,6 +67,29 @@ async def resolve_entity(input_text: str, send: Callable) -> dict:
         }
     entity.pop("is_chinese_founder", None)
 
+    # ── Fallback: if founder == company, model only found one side.
+    # Try a targeted search + regex to find the missing piece.
+    founder = entity.get("founder") or ""
+    company = entity.get("company") or ""
+    if founder == company:
+        try:
+            r = await web_search.handler(query=f'"{input_text}" founder CEO co-founder who founded')
+            snippet_text = " ".join(
+                res.get("content", "") for res in r.get("results", [])[:5]
+            )
+            # Look for "Founded by X", "CEO X", "co-founder X" patterns
+            name_match = re.search(
+                r'(?:founded by|CEO|co-founder|founder)[,\s:]+([A-Z][a-zÀ-ž\'-]+(?:\s+[A-Z][a-zÀ-ž\'-]+)+)',
+                snippet_text
+            )
+            if name_match:
+                found_name = name_match.group(1).strip()
+                entity["founder_en"] = found_name
+                entity["founder"] = found_name
+                entity["confidence"] = "medium"
+        except Exception:
+            pass
+
     send({"type": "stage", "name": "entity_resolution", "status": "done", "result": entity})
     return entity
 
