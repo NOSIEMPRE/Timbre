@@ -107,9 +107,13 @@ async def classify_intent(text: str, has_session: bool) -> str:
     if text.strip().lower() in ("exit", "quit", "退出", "再见", "拜拜"):
         return "exit"
 
-    # Fast-path: short input with no question mark and no active session
-    # → almost certainly a name or company to research, skip the LLM call
-    if len(words) <= 3 and "?" not in text and "？" not in text and not has_session:
+    # Fast-path: short input with no question mark and no followup signals
+    # → almost certainly a name or company, regardless of session state
+    FOLLOWUP_SIGNALS = {"他", "她", "这", "那", "其", "更多", "详细",
+                        "呢", "吗", "如何", "怎么", "融资", "团队", "联创",
+                        "为什么", "什么时候", "多少", "哪里", "tell me more"}
+    has_followup = any(s in text for s in FOLLOWUP_SIGNALS)
+    if len(words) <= 3 and "?" not in text and "？" not in text and not has_followup:
         return "research"
 
     provider = get_provider()
