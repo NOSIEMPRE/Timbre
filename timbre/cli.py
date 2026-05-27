@@ -41,13 +41,15 @@ def get_output_dir() -> Path:
 # ── File helpers ──────────────────────────────────────────────────────────────
 
 def slugify(s: str) -> str:
-    return re.sub(r"[^\w一-鿿-]", "", s.lower().replace(" ", "-"))[:60]
+    if not s:
+        return "unknown"
+    return re.sub(r"[^\w一-鿿-]", "", str(s).lower().replace(" ", "-"))[:60]
 
 
 def build_filename(entity: dict) -> str:
     date = datetime.now().strftime("%Y-%m-%d")
-    f = entity.get("founder_en") or entity.get("founder", "unknown")
-    c = entity.get("company", "unknown")
+    f = entity.get("founder_en") or entity.get("founder") or "unknown"
+    c = entity.get("company") or "unknown"
     return f"{slugify(f)}-{slugify(c)}-{date}.md"
 
 
@@ -165,7 +167,9 @@ def make_send():
                 result = event.get("result")
                 if result:
                     conf = {"high": 90, "medium": 70}.get(result.get("confidence", ""), 50)
-                    console.print(f"\n  [dim]→ {result.get('founder')} · {result.get('company')}  (置信度 {conf}%)[/dim]")
+                    founder_d = result.get("founder") or result.get("founder_en") or "未识别"
+                    company_d = result.get("company") or "未识别"
+                    console.print(f"\n  [dim]→ {founder_d} · {company_d}  (置信度 {conf}%)[/dim]")
                 else:
                     console.print()
         elif t == "tool_start":
