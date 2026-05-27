@@ -18,7 +18,7 @@
 
 一个**越用越好用**的 Founder Intelligence System，面向一级市场投资团队。
 
-大多数工具给你一次性的答案。Timbre 构建的是知识图谱。每一次 `founder-research` 都向库里写入一个 Markdown 节点，investor 名称自动转为 `[[Benchmark]]`、`[[红杉]]` 等 Obsidian wiki link。研究 20 个项目之后，Graph View 就能呈现任何单次搜索都看不到的东西：*谁在押这个赛道*、*哪些 founder 共同被某个 LP 支持*。这种跨 session 的复利效应，才是真正的核心价值。
+大多数工具给你一次性的答案。Timbre 构建的是知识图谱。每一次 `founder-research` 都向库里写入一个 Markdown 节点，investor 名称自动转为 `[[Benchmark]]`、`[[红杉]]` 等 Obsidian wiki link。研究 20 个项目之后，Graph View 就能呈现任何单次搜索都看不到的东西：*什么投资机构在押注这个赛道*、*哪些 founder 共同被某个 LP 支持*。这种跨 session 的复利效应，才是真正的核心价值。
 
 ---
 
