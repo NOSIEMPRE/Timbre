@@ -315,7 +315,7 @@ async def main():
         else f"[dim]~/.timbre/profiles/[/dim]"
 
     console.print(f"\n  [bold cyan]见微 · Timbre[/bold cyan]  {dest}")
-    console.print("  [dim]输入名字或公司名开始，研究完可以继续追问。[/dim]\n")
+    console.print("  [dim]输入创始人姓名或公司名，开始调研。[/dim]\n")
 
     session_ctx = None
     while True:
