@@ -131,23 +131,28 @@ async def synthesize(entity: dict, results_by_dimension: dict, extra_context: st
     # Build numbered source list — every fact must trace back to one of these
     sources: list[dict] = []
     dim_blocks: list[str] = []
+    raw_total = 0
 
     for dim_name, queries in results_by_dimension.items():
         excerpts: list[str] = []
         for q_result in queries:
             for r in q_result.get("results", [])[:4]:
                 url = r.get("url", "")
-                content = (r.get("content") or "").strip()
                 title = (r.get("title") or "").strip()
-                if not url or not content:
+                content = (r.get("content") or r.get("snippet") or "").strip()
+                raw_total += 1
+                if not url:
                     continue
                 n = len(sources) + 1
                 sources.append({"n": n, "title": title, "url": url})
+                body = content[:500] if content else "(摘要不可用，请点击链接查看原文)"
                 excerpts.append(
-                    f"[{n}] {title}\n来源：{url}\n原文：{content[:500]}"
+                    f"[{n}] {title}\n来源：{url}\n原文：{body}"
                 )
         if excerpts:
             dim_blocks.append(f"### {dim_name}\n\n" + "\n\n".join(excerpts))
+
+    send({"type": "search_summary", "raw": raw_total, "used": len(sources)})
 
     research_results = "\n\n".join(dim_blocks)
     ref_list = "\n".join(f"[{s['n']}] {s['title']} — {s['url']}" for s in sources)

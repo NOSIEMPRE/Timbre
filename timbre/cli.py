@@ -174,6 +174,10 @@ def make_send():
                     console.print()
         elif t == "tool_start":
             console.print("[dim].[/dim]", end="")
+        elif t == "search_summary":
+            raw, used = event.get("raw", 0), event.get("used", 0)
+            color = "green" if used > 0 else "red"
+            console.print(f"\n  [dim]搜索原始结果 {raw} 条 → 有效来源 [{color}]{used}[/{color}] 条[/dim]")
         elif t == "plan_ready":
             dims = event.get("plan", {}).get("dimensions", [])
             total = sum(len(d.get("queries", [])) for d in dims)
