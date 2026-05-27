@@ -102,7 +102,7 @@ for block in response.content:
         result = await dispatch_tool_call(block.name, block.input)
 ```
 
-完整 agentic loop 示例（含多轮 sourcing → 深研流程）见 [`example_claude_api.py`](example_claude_api.py)。
+完整 agentic loop 示例（含多轮 sourcing → 深研流程）见 [`examples/claude_api_demo.py`](examples/claude_api_demo.py)。
 
 ---
 
@@ -247,7 +247,7 @@ timbre › 退出
 ```
 Timbre/
 ├── SKILL.md                         行为规范文档——粘贴至任意 Claude 环境即可使用
-├── example_claude_api.py            完整 Anthropic API agentic loop 示例
+├── examples/claude_api_demo.py            完整 Anthropic API agentic loop 示例
 ├── deliverable.html                 互动版 VC sourcing 演示报告
 ├── timbre/
 │   ├── cli.py                       交互式 CLI（asyncio + Rich）

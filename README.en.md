@@ -102,7 +102,7 @@ for block in response.content:
         result = await dispatch_tool_call(block.name, block.input)
 ```
 
-See [`example_claude_api.py`](example_claude_api.py) for a complete agentic loop with multi-turn sourcing → drill-down.
+See [`examples/claude_api_demo.py`](examples/claude_api_demo.py) for a complete agentic loop with multi-turn sourcing → drill-down.
 
 ---
 
@@ -241,7 +241,7 @@ Each input goes through a lightweight intent classifier. Timbre routes to sourci
 ```
 Timbre/
 ├── SKILL.md                         Behavioral spec — paste into any Claude environment
-├── example_claude_api.py            Complete Anthropic API agentic loop demo
+├── examples/claude_api_demo.py            Complete Anthropic API agentic loop demo
 ├── deliverable.html                 Interactive VC sourcing deliverable (demo)
 ├── timbre/
 │   ├── cli.py                       Interactive CLI (asyncio + Rich)

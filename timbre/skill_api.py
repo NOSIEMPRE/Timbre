@@ -19,7 +19,7 @@ Drop-in usage with the Anthropic Python SDK:
         if block.type == "tool_use":
             result = await dispatch_tool_call(block.name, block.input)
 
-See example_claude_api.py for a complete agentic loop.
+See examples/claude_api_demo.py for a complete agentic loop.
 """
 
 from __future__ import annotations
