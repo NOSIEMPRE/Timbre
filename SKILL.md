@@ -254,8 +254,20 @@ timbre/pipelines/founder_research.py  founder-research pipeline
 timbre/skill_api.py                   Anthropic API Tool 定义（TOOLS + dispatch_tool_call）
 timbre/vault.py                       Obsidian 知识图谱维护（index · log · investor/sector 页）
 examples/claude_api_demo.py           完整 agentic loop 示例
-timbre/cli.py                         交互式 CLI（含意图路由、Rich 显示）
+timbre/cli.py                         交互式 CLI（含意图路由、Rich 显示、timbre eval 命令）
 timbre/tools/web_search.py            Tavily 搜索封装
 timbre/memory/store.py                SQLite FTS5 跨 session 记忆
-timbre/eval/quality_check.py          输出质量评分
+timbre/session.py                     Session 级 token 用量与成本追踪（25 种模型定价）
+timbre/eval/quality_check.py          启发式质量评分（0–100）+ LLM-as-Judge 二次评审
+timbre/prompts/eval_judge.yaml        LLM-as-Judge 评审员 prompt（触发阈值 < 75 分）
 ```
+
+### `timbre eval` 命令
+
+无需 API 调用，秒级离线扫描已保存的所有 founder 档案：
+
+```bash
+timbre eval
+```
+
+输出按质量分降序排列，高亮低分档案，显示各维度得分（sections / citations / risk_flags / length / honesty）及具体问题列表，帮助快速发现需要补充的档案。

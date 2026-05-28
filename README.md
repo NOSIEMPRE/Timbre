@@ -180,11 +180,12 @@ timbre › 研究一下梁文锋
   ▸ 并行搜索中       ............
   ▸ 整理搜索结果
 
-  质量评分  91分  字数 2840  来源 18
+  质量评分  91分  字数 2840  引用 18 处  来源 12 条
 
   更新知识图谱：投资方页面 3 个 · 赛道页面 [AI / 大模型]
 
   ✓  已保存至 ~/.timbre/profiles/founders/liang-wenfeng-deepseek-2026-05-28.md
+  💰  本次消耗：$0.041  (input 12,340 tok · output 2,890 tok · claude-opus-4-7)
 ```
 
 档案片段：
@@ -290,6 +291,9 @@ lint:  找出所有没有对应页面的 [[wikilink]]
 # 档案与记忆
 timbre › 查看我保存的档案
 timbre › 退出
+
+# 离线质量扫描（无需 API 调用）
+timbre eval
 ```
 
 每次输入前有一次轻量意图识别，自动路由至 sourcing、research、追问、investor 查询或记忆检索，无需切换模式。
@@ -323,13 +327,15 @@ Timbre/
 │   │   └── browse_url.py            Playwright（付费内容访问）
 │   ├── memory/
 │   │   └── store.py                 SQLite FTS5 跨 session 记忆（存于 ~/.timbre/）
+│   ├── session.py                   Session 级 token 用量与成本追踪（25 种模型定价）
 │   ├── eval/
-│   │   └── quality_check.py         0–100 分输出质量评分
+│   │   └── quality_check.py         启发式质量评分（0–100）+ LLM-as-Judge 二次评审
 │   └── prompts/                     所有 Agent 行为定义在这里
 │       ├── system.yaml              研究员人设
 │       ├── entity_resolution.yaml   Stage 1 提示词
 │       ├── research_plan.yaml       Stage 2a 提示词
-│       └── founder_profile.yaml     Stage 3 综合分析模板
+│       ├── founder_profile.yaml     Stage 3 综合分析模板
+│       └── eval_judge.yaml          LLM-as-Judge 评审员 prompt（< 75 分触发）
 ```
 
 > 所有 Agent 行为都在 `prompts/` 里定义。修改调研方式或输出风格，只需改 YAML，不需要动业务代码。

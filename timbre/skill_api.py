@@ -168,21 +168,28 @@ async def _handle_founder_research(
     Runs the full founder research pipeline and returns the Markdown profile.
 
     Returns a dict with:
-        founder:  resolved founder name
-        company:  resolved company name
-        profile:  full Markdown VC due-diligence profile
-        saved_to: path where the profile was saved (or None)
-        quality:  quality score dict {score, word_count, url_count, issues}
+        founder:    resolved founder name
+        company:    resolved company name
+        profile:    full Markdown VC due-diligence profile
+        saved_to:   path where the profile was saved (or None)
+        quality:    heuristic quality score dict:
+                      score, word_count, url_count, citation_count,
+                      dimensions {sections,citations,risk_flags,length,honesty,sources},
+                      issues list
+        session:    token usage and estimated cost for this run:
+                      input_tokens, output_tokens, cost_usd, models
     """
     import os
     import re
     from datetime import datetime
     from timbre.pipelines.founder_research import run_founder_research
     from timbre.eval.quality_check import quality_check
+    from timbre import session as _session
 
     def _collect(event: dict) -> None:
         pass  # discard progress events in API mode
 
+    _session.reset()
     result = await run_founder_research(
         input_text=query,
         context_urls=context_urls or [],
@@ -259,6 +266,7 @@ async def _handle_founder_research(
         "profile": profile,
         "saved_to": saved_to,
         "quality": metrics,
+        "session": _session.summary(),
     }
 
 

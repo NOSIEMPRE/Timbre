@@ -180,11 +180,12 @@ timbre › 研究 Clay 的 CEO
   ▸ 并行搜索中       ............
   ▸ 整理搜索结果
 
-  质量评分  87分  字数 2340  来源 14
+  质量评分  87分  字数 2340  引用 14 处  来源 9 条
 
   更新知识图谱：投资方页面 2 个 · 赛道页面 [GTM Automation]
 
   ✓  已保存至 ~/.timbre/profiles/founders/alex-mackenzie-clay-2026-05-28.md
+  💰  Cost: $0.028  (input 9,140 tok · output 2,180 tok · claude-opus-4-7)
 ```
 
 Profile excerpt:
@@ -284,6 +285,9 @@ lint:  find all [[wikilinks]] with no corresponding page
 # Memory
 timbre › 查看我保存的档案
 timbre › exit
+
+# Offline quality audit (no API calls)
+timbre eval
 ```
 
 Each input goes through a lightweight intent classifier. Timbre routes to sourcing, research, follow-up, investor lookup, or memory. No mode switching needed.
@@ -317,13 +321,15 @@ Timbre/
 │   │   └── browse_url.py            Playwright (paywall access)
 │   ├── memory/
 │   │   └── store.py                 SQLite FTS5 — stored in ~/.timbre/
+│   ├── session.py                   Session-level token usage + cost tracking (25 model pricing table)
 │   ├── eval/
-│   │   └── quality_check.py         0–100 output quality scoring
+│   │   └── quality_check.py         Heuristic scoring (0–100) + LLM-as-Judge second-pass review
 │   └── prompts/                     All agent behavior is defined here
 │       ├── system.yaml              Researcher persona
 │       ├── entity_resolution.yaml   Stage 1 prompts
 │       ├── research_plan.yaml       Stage 2a prompts
-│       └── founder_profile.yaml     Stage 3 synthesis template
+│       ├── founder_profile.yaml     Stage 3 synthesis template
+│       └── eval_judge.yaml          LLM-as-Judge reviewer prompt (triggers when score < 75)
 ```
 
 > All agent behavior lives in `prompts/`. Changing how Timbre researches or writes is a YAML edit, not a code change.
