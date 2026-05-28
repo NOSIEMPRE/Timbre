@@ -672,7 +672,7 @@ body {
       <li><a href="#overview">产品定位</a></li>
       <li class="nav-part">Part A · 对话过程</li>
       <li><a href="#conv1">对话一：AI Infrastructure</a></li>
-      <li><a href="#conv2">对话二：B2B SaaS</a></li>
+      <li><a href="#conv2">对话二：Healthcare AI</a></li>
       <li><a href="#compare">两轮对比</a></li>
       <li class="nav-part">Part B · 最佳项目</li>
       <li><a href="#projects">5 个最佳项目</a></li>
@@ -735,7 +735,7 @@ body {
       <div class="part-label">Part A · 对话过程与结果</div>
       <h2 class="part-title">对话一：AI Infrastructure</h2>
       <div class="section-rule"></div>
-      <p class="part-desc">从用户输入到最终项目列表的完整过程，包含 14 个并行搜索和 LLM 提取评分。</p>
+      <p class="part-desc">从用户输入到最终项目列表的完整过程，包含 14 条并行 query 和 Stage 2.5 创始人补全。</p>
 
       <div class="chat" id="chat1">
         <div class="chat-msg user">
@@ -751,35 +751,35 @@ body {
       </div>
 
       <div class="tool-group">
-        <div class="tool-group-header">Stage 1 — 14 个并行 web_search</div>
+        <div class="tool-group-header">Stage 1 — 14 条并行 web_search</div>
         <div class="tool-list">
-          <span class="tool-chip theme">"AI infrastructure" seed 2025</span>
+          <span class="tool-chip theme">"AI infrastructure" AI startup seed 2025 early stage</span>
           <span class="tool-chip theme">HackerNews "Show HN" AI infrastructure 2025</span>
           <span class="tool-chip">site:news.ycombinator.com "Show HN" AI startup 2025</span>
-          <span class="tool-chip">"Y Combinator" W25 S25 AI founders</span>
-          <span class="tool-chip">site:techcrunch.com "pre-seed" OR "seed" AI 2025</span>
-          <span class="tool-chip">"seed round" "$1M" OR "$3M" AI 2025 founder</span>
-          <span class="tool-chip">"we just launched" AI startup 2025</span>
-          <span class="tool-chip">"building in public" AI SaaS 2025</span>
-          <span class="tool-chip">ProductHunt new AI startup 2025</span>
-          <span class="tool-chip">"raised seed" artificial intelligence 2025</span>
-          <span class="tool-chip">"github" trending AI tool startup 2025</span>
-          <span class="tool-chip">demo day 2025 AI startup accelerator</span>
-          <span class="tool-chip">YCombinator 2025 batch AI startups</span>
-          <span class="tool-chip">"excited to announce" AI 2025</span>
+          <span class="tool-chip">site:news.ycombinator.com "Show HN" developer tool machine learning 2025</span>
+          <span class="tool-chip">"Y Combinator" W25 S25 AI companies founders list</span>
+          <span class="tool-chip">YCombinator 2025 batch artificial intelligence startups</span>
+          <span class="tool-chip">ProductHunt new AI startup launched 2025</span>
+          <span class="tool-chip">site:techcrunch.com "pre-seed" OR "seed" AI startup 2025</span>
+          <span class="tool-chip">"seed round" "$1M" OR "$2M" OR "$3M" OR "$5M" AI 2025 founder</span>
+          <span class="tool-chip">"raised seed" artificial intelligence startup 2025</span>
+          <span class="tool-chip">"we just launched" OR "excited to announce" AI startup 2025</span>
+          <span class="tool-chip">"building in public" AI SaaS 2025 founder</span>
+          <span class="tool-chip">"github" trending AI tool startup open-source 2025</span>
+          <span class="tool-chip">demo day 2025 AI startup seed pre-seed accelerator</span>
         </div>
       </div>
 
       <div class="chat" id="chat1b">
         <div class="chat-msg agent">
           <div class="chat-avatar">T</div>
-          <div class="chat-bubble">多源扫描完成。抓取 62 条原始结果 → Stage 2 LLM 提取与评分（qwen2.5:7b，top-30 摘要输入）→ Stage 2.5 补全创始人信息（6 项 unknown → 定向查找）</div>
+          <div class="chat-bubble">多源扫描完成。抓取 65 条原始结果 → Stage 2 LLM 提取与评分（qwen2.5:7b）→ Stage 2.5 补全创始人信息（4 项 unknown，定向查找）</div>
         </div>
-        <div class="chat-note">→ Stage 2.5 创始人补全：6/6 项触发定向搜索，找到 4 个真实姓名</div>
+        <div class="chat-note">→ Stage 2.5：4 项触发定向搜索，找到 2 个真实姓名；2 项未能定位，保留 unknown</div>
       </div>
 
       <div class="stat-strip">
-        <div class="stat"><div class="stat-n">62</div><div class="stat-label">原始结果</div></div>
+        <div class="stat"><div class="stat-n">65</div><div class="stat-label">原始结果</div></div>
         <div class="stat-divider"></div>
         <div class="stat"><div class="stat-n">14</div><div class="stat-label">并行 Query</div></div>
         <div class="stat-divider"></div>
@@ -798,39 +798,39 @@ body {
 
     <!-- ── Conversation 2 ─────────────────────────────────────────────────── -->
     <section class="section" id="conv2">
-      <h2 class="part-title">对话二：B2B SaaS</h2>
+      <h2 class="part-title">对话二：Healthcare AI</h2>
       <div class="section-rule"></div>
-      <p class="part-desc">切换垂直领域，注入 B2B SaaS 专属 query，验证 Skill 的跨垂直适配能力。</p>
+      <p class="part-desc">切换垂直领域，注入医疗 AI 专属 query，验证 Skill 的跨赛道适配能力。</p>
 
       <div class="chat" id="chat2">
         <div class="chat-msg user">
           <div class="chat-avatar">你</div>
-          <div class="chat-bubble">有没有值得关注的早期 B2B SaaS 项目</div>
+          <div class="chat-bubble">healthcare AI 方向有没有值得看的早期项目</div>
         </div>
-        <div class="chat-note">→ 意图识别：命中「值得关注」+「早期」，垂直词提取：B2B SaaS</div>
+        <div class="chat-note">→ 意图识别：命中「值得看」+「早期」，垂直词提取：healthcare AI</div>
         <div class="chat-msg agent">
           <div class="chat-avatar">T</div>
-          <div class="chat-bubble">切换到 B2B SaaS 模式，注入企业软件专属 query…</div>
+          <div class="chat-bubble">切换到 Healthcare AI 模式，注入垂直专属 query…</div>
         </div>
       </div>
 
       <div class="tool-group">
-        <div class="tool-group-header">Stage 1 — B2B SaaS 专属 query（优先注入）</div>
+        <div class="tool-group-header">Stage 1 — Healthcare AI 专属 query（优先注入）</div>
         <div class="tool-list">
-          <span class="tool-chip theme">"enterprise AI" startup seed 2025 B2B SaaS</span>
-          <span class="tool-chip theme">vertical SaaS AI startup seed 2025 enterprise software</span>
+          <span class="tool-chip theme">"healthcare AI" AI startup seed 2025 early stage</span>
+          <span class="tool-chip theme">HackerNews "Show HN" healthcare AI 2025</span>
           <span class="tool-chip">+ 12 条通用 query（与对话一共用）</span>
         </div>
       </div>
 
       <div class="stat-strip">
-        <div class="stat"><div class="stat-n">63</div><div class="stat-label">原始结果</div></div>
+        <div class="stat"><div class="stat-n">58</div><div class="stat-label">原始结果</div></div>
         <div class="stat-divider"></div>
         <div class="stat"><div class="stat-n">14</div><div class="stat-label">并行 Query</div></div>
         <div class="stat-divider"></div>
-        <div class="stat"><div class="stat-n">8</div><div class="stat-label">提取项目</div></div>
+        <div class="stat"><div class="stat-n">6</div><div class="stat-label">提取项目</div></div>
         <div class="stat-divider"></div>
-        <div class="stat"><div class="stat-n">7<span>/8</span></div><div class="stat-label">创始人已识别</div></div>
+        <div class="stat"><div class="stat-n">5<span>/6</span></div><div class="stat-label">创始人已识别</div></div>
       </div>
 
       <table class="results-table">
@@ -849,24 +849,23 @@ body {
       <div style="margin-bottom:1rem;">
         <div class="progress-row">
           <span class="progress-label">创始人识别率</span>
-          <div class="progress-track"><div class="progress-fill green" data-pct="78"></div></div>
-          <span class="progress-pct">78%</span>
-        </div>
-        <div class="progress-row">
-          <span class="progress-label">Stage 2.5 补全率</span>
-          <div class="progress-track"><div class="progress-fill blue" data-pct="73"></div></div>
-          <span class="progress-pct">73%</span>
+          <div class="progress-track"><div class="progress-fill green" data-pct="75"></div></div>
+          <span class="progress-pct">75%</span>
         </div>
         <div class="progress-row">
           <span class="progress-label">「高」吸引力占比</span>
-          <div class="progress-track"><div class="progress-fill amber" data-pct="36"></div></div>
-          <span class="progress-pct">36%</span>
+          <div class="progress-track"><div class="progress-fill amber" data-pct="42"></div></div>
+          <span class="progress-pct">42%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">有机构背书项目</span>
+          <div class="progress-track"><div class="progress-fill blue" data-pct="100"></div></div>
+          <span class="progress-pct">100%</span>
         </div>
       </div>
 
       <div class="compare-note">
-        <strong>Miyagi Labs</strong> 和 <strong>Mondo AI</strong> 在两轮中均出现，且创始人信息一致（Tyrone Davis III + Guang Cui / Lavanya Bhasin）——跨数据源重复出现是最强的信号验证机制。
-        <strong>Emergent</strong> 虽然两轮 vc_appeal 均为「高」，但创始人始终为 unknown，因此不进入 Part B 最终推荐列表——信号不完整的项目不应进入最终 outreach 队列。
+        <strong>GLNK</strong> 和 <strong>Overstand</strong> 在两轮中均出现，创始人信息一致（Raouf Abujaber + Rayan Ghandour / Sejoon Chang）。同一项目跨不同垂直 query 重复出现，是这套扫描逻辑里最强的信号验证。<strong>Stamp</strong> 两轮均有提取但创始人字段异常（Stage 2.5 未能确认），vc_appeal 为「中」，未进入 Part B 推荐列表。有具名创始人才能进 outreach，这条规则没有例外。
       </div>
     </section>
 
@@ -890,31 +889,23 @@ body {
         <div class="qa-num">01</div>
         <h3 class="qa-question">你用什么标准衡量这个 Skill 的输出质量？</h3>
         <p class="qa-body">
-          我在 <code class="code-inline">eval/quality_check.py</code> 中实现了 0–100 分的可量化评分模型，分五个加权维度，同时配备了 LLM-as-Judge 二次评审机制：
-        </p>
-        <ul class="qa-bullets">
-          <li><span class="qa-highlight">节段完整性（40 分）</span>：检测 8 个必须节段是否存在且内容非空——一句话定位、投资亮点、创始人画像、创始团队、公司与产品、业务牵引力、融资信息、近期动态。缺失任一节段或仅写「暂无公开数据」均扣分。</li>
-          <li><span class="qa-highlight">引用密度（25 分）</span>：正文中 <code class="code-inline">[N]</code> 标注数量，对应「信息源」节段中的真实 URL。无引用的表述视为潜在捏造。</li>
-          <li><span class="qa-highlight">风险标注（15 分）</span>：档案中 P0 / P1 / P2 风险标记数量。VC 尽调不能没有负面信号。</li>
-          <li><span class="qa-highlight">内容长度（10 分）</span>：字数 800–5000 视为正常范围，过短说明信息严重不足，过长说明缺乏提炼。</li>
-          <li><span class="qa-highlight">诚实性（5 分）</span>：档案必须包含「暂无公开数据」标注，同时正文需明确提到被研究对象姓名。</li>
-        </ul>
-        <p class="qa-body" style="margin-top:0.75rem;">
-          当启发式评分 <strong>&lt; 75 分</strong>时，触发 <span class="qa-highlight">LLM-as-Judge</span> 二次评审：将档案送入独立评审员 prompt，从事实可信度、信息完整性、精准度、风险质量四个维度各打 0–10 分，合并成加权总分并给出文字判断，帮助识别启发式规则无法捕捉的问题（如大段引用来自同一来源、风险分析流于表面）。
+          判断标准只有一个：这条记录能不能直接进 outreach 流程？我设了三个最低条件：创始人姓名已知，至少一条机构背书信号（YC 批次、融资公告、媒体报道），信号来自两个以上独立来源。三条都满足才进列表，缺一降级或剔除。
         </p>
         <p class="qa-body">
-          此外，<code class="code-inline">timbre eval</code> 命令可在不调用任何 API 的情况下离线扫描 vault 内所有档案，按质量分降序输出报告，高亮低分档案及具体问题，是日常档案维护的核心工具。
+          在此基础上，<code class="code-inline">eval/quality_check.py</code> 把这套判断量化成了 0–100 的评分，权重最高的两项是节段完整性（40 分，8 个必须节段）和引用密度（25 分，正文 [N] 标注对应真实 URL）。评分低于 75 分时，自动触发 LLM 二次审核，从事实可信度、完整性、精准度、风险质量四个维度打分。平时可以跑 <code class="code-inline">timbre eval</code>，不消耗 API，离线批量扫描全部档案。
         </p>
       </div>
 
       <div class="qa-block" id="q2">
         <div class="qa-num">02</div>
         <h3 class="qa-question">你做了哪些设计决策来控制"噪声"？</h3>
-        <p class="qa-body">噪声有两种：输出量太大（信息过载）和相关性低（非早期项目混入）。我做了三层过滤：</p>
+        <p class="qa-body">
+          噪声主要来自两类：大公司发布新功能被误当成 startup，以及阶段不在 pre-seed/seed 的项目混入。我做了三层过滤。
+        </p>
         <ul class="qa-bullets">
-          <li><span class="qa-highlight">Query 层</span>：全部 query 加入 "seed" / "pre-seed" / "2025" 限定词，用 <code class="code-inline">site:</code> 限制来源（HN、TechCrunch），从源头过滤大公司新闻。</li>
-          <li><span class="qa-highlight">LLM 提取层</span>：Prompt 给出四条硬筛选规则（成立时间、阶段、技术壁垒、排除独角兽），输出上限强制设为 12 个，让模型做选择而非全量返回。</li>
-          <li><span class="qa-highlight">展示层</span>：按 vc_appeal 用 ▲●▽ 图标显示优先级，用户可快速跳过低分项目，无需读完全列表。只有「高」评级项目建议进入 founder-research 深研。</li>
+          <li><span class="qa-highlight">Query 层</span>：所有 query 都有 "seed"/"2025" 限定词，搜索时用 <code class="code-inline">site:</code> 只看 HN 和 TechCrunch，直接拦截大部分发布会新闻。</li>
+          <li><span class="qa-highlight">提取层</span>：给 LLM 的 prompt 里有四条硬规则，成立时间、阶段、技术差异化、排除已知独角兽，并且强制输出上限 12 个，让模型做取舍，不能全量返回。</li>
+          <li><span class="qa-highlight">展示层</span>：▲●▽ 三档分级，analyst 扫一眼就可以跳过低分项目，只有「高」评级的才建议进 founder-research 深研。</li>
         </ul>
       </div>
 
@@ -922,16 +913,11 @@ body {
         <div class="qa-num">03</div>
         <h3 class="qa-question">如果给你两周时间继续打磨，你优先改进哪一个环节？</h3>
         <p class="qa-body">
-          在初版交付后，我已完成了三个补强方向：<span class="qa-highlight">可量化质量评分（P0）</span>、<span class="qa-highlight">Session 级成本追踪（P1）</span> 和 <span class="qa-highlight"><code class="code-inline">timbre eval</code> 批量质检命令（P2）</span>。前两轮迭代把"凭感觉"的质量判断替换成了可复现的指标体系，也让每次调研的 token 消耗和美元成本透明可控。
+          目前最大的缺口是 Stage 2.5 的 founder 校验逻辑。现在的做法是：搜索候选姓名、通过正则过滤、写入档案。缺的是最后一步，确认"这个人是不是这家公司的 founder"。Stamp 在两轮测试里都出现了错误归属，搜索结果页上的其他人名被提取进来了。在 Stage 2.5 结束前加一次模型确认，这个问题基本可以解决。
         </p>
         <p class="qa-body">
-          接下来的两周，我会优先做三件事：
+          第二件事是跨 session 去重。用几周之后，每次扫描都会重新浮现同一批 YC W25 公司，新鲜感消失，list fatigue 来了。在 SQLite 记忆层加公司指纹，已研究过的往后排，真正新的往前推，这是让工具保持实用价值的关键。两件事都是一两天的工作量，不需要改 pipeline 结构。
         </p>
-        <ul class="qa-bullets">
-          <li><span class="qa-highlight">Stage 2.5 LLM 交叉验证</span>：Stage 2.5 已将创始人识别率从 ~40% 提升到 ~78%，但剩余 22% 的错误归属（如候选姓名来自同名公司的非创始人员工）需要额外一次 LLM 核实——把候选姓名和公司名一起发回模型，确认是否为真正的创始人，再写入档案。</li>
-          <li><span class="qa-highlight">增量去重机制</span>：目前每次 sourcing 都是独立扫描，跨 session 会重复出现同一批 YC W25 公司。应在 SQLite 记忆层加入项目指纹（公司名 + 创始人名 hash），已研究过的项目自动降权，把新鲜度纳入 vc_appeal 评分。</li>
-          <li><span class="qa-highlight">低质量档案自动重研</span>：将 <code class="code-inline">timbre eval</code> 的输出接入 CI-style 循环——对评分 &lt; 60 分的档案，不仅标记问题，还自动补发缺失维度的定向搜索（如缺少融资信息时触发 Crunchbase 专项查询），在不重跑全流程的前提下提升现有档案质量。</li>
-        </ul>
       </div>
     </section>
 
@@ -946,45 +932,43 @@ body {
 <script>
 // ── Data ────────────────────────────────────────────────────────────────────
 const RUN1 = [
-  {name:"Miyagi Labs",founder:"Tyrone Davis III, Guang Cui",one_liner:"为考试备考提供人工智能辅导老师",stage:"Seed",market:"EdTech / AI 辅导",signals:["YC W25","国际化创始团队","高频刚需赛道"],source_url:"",vc_appeal:"高"},
-  {name:"MiroLumari",founder:"Eshani Mehta",one_liner:"提供无需编码的内部应用创建平台",stage:"Seed",market:"No-code 企业工具",signals:["YC W25","B2B SaaS","企业软件白地"],source_url:"",vc_appeal:"高"},
-  {name:"Emergent",founder:"unknown",one_liner:"生成并部署生产应用的自主编码代理",stage:"Seed",market:"AI 代码生成",signals:["YC W25","TechCrunch 报道","GitHub trending"],source_url:"",vc_appeal:"高"},
-  {name:"Misprint",founder:"unknown",one_liner:"为 Pokémon 卡牌交易提供 Robinhood 式平台",stage:"unknown",market:"金融科技 / 收藏品交易",signals:["新兴市场","YC W25"],source_url:"",vc_appeal:"中"},
-  {name:"Mondo AI",founder:"Lavanya Bhasin",one_liner:"提供高质量多语言训练数据",stage:"Seed",market:"AI 训练数据",signals:["LLM 基础设施","多语言稀缺供给"],source_url:"",vc_appeal:"中"},
-  {name:"WO佐宿",founder:"Fredrik Hjelm",one_liner:"无需编程技能即可构建移动应用",stage:"Seed",market:"No-code 移动端",signals:["YC W25","开发者工具"],source_url:"",vc_appeal:"中"},
+  {name:"GLNK",founder:"Raouf Abujaber, Rayan Ghandour",one_liner:"为医疗机构提供 AI 驱动的协作平台",stage:"unknown",market:"Healthcare B2B",signals:["YC W25","双创始人可溯源","两轮交叉验证"],source_url:"https://www.extruct.ai/data-room/ycombinator-companies-w25",vc_appeal:"高"},
+  {name:"Prósperos.ai",founder:"Salvador Chavez",one_liner:"为无银行账户社区提供 AI 金融服务",stage:"Bootstrapped",market:"Fintech / 普惠金融",signals:["YC W25","拉美市场白地","监管护城河"],source_url:"https://catalaize.substack.com/p/y-combinator-s25-batch-profile-and",vc_appeal:"高"},
+  {name:"Overstand",founder:"Sejoon Chang",one_liner:"为高管生成客户沟通摘要",stage:"unknown",market:"B2B SaaS / 企业通讯",signals:["YC W25","两轮交叉验证"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
+  {name:"Mercura",founder:"unknown",one_liner:"基于物料清单和规格表的 AI 报价工具",stage:"unknown",market:"制造业 AI",signals:["YC W25","垂直市场切入"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
+  {name:"Stamp",founder:"unknown",one_liner:"AI 邮件客户端，自动分类和回复",stage:"Bootstrapped",market:"企业通讯工具",signals:["YC W25","效率工具"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
+  {name:"Payall",founder:"unknown",one_liner:"低成本合规跨境支付解决方案",stage:"unknown",market:"跨境支付",signals:["YC W25","合规护城河"],source_url:"https://catalaize.substack.com/p/y-combinator-s25-batch-profile-and",vc_appeal:"中"},
 ];
 
 const RUN2 = [
-  {name:"Emergent",founder:"unknown",one_liner:"自主编码代理，生成测试和部署生产应用",stage:"Seed",market:"AI 代码生成",signals:["YC W25","TechCrunch","GitHub trending"],source_url:"",vc_appeal:"高"},
-  {name:"Prósperos.ai",founder:"Salvador Chavez",one_liner:"传统金融服务之外的社区银行",stage:"Pre-Seed",market:"Fintech / 普惠金融",signals:["拉美市场白地","监管护城河","社区银行"],source_url:"",vc_appeal:"高"},
-  {name:"Stamp",founder:"Curtis Schmidt",one_liner:"AI 驱动的邮件客户端，自动化排序和回复",stage:"Seed",market:"企业通讯工具",signals:["YC W25","B2B SaaS","效率工具"],source_url:"",vc_appeal:"中"},
-  {name:"WOZ",founder:"—",one_liner:"无代码平台构建移动应用",stage:"Seed",market:"No-code / 移动端",signals:["YC W25","开发者工具"],source_url:"",vc_appeal:"中"},
-  {name:"Miyagi Labs",founder:"Tyrone Davis III, Guang Cui",one_liner:"AI 辅导，为考试备考提供智能老师",stage:"Seed",market:"EdTech / AI 辅导",signals:["YC W25","两轮一致验证"],source_url:"",vc_appeal:"中"},
-  {name:"Solidroad",founder:"Mark Hughes",one_liner:"为软件团队提供质量保证和教练支持",stage:"Seed",market:"DevTools / QA",signals:["YC W25","B2B SaaS"],source_url:"",vc_appeal:"中"},
-  {name:"Mondo AI",founder:"Lavanya Bhasin",one_liner:"高质量多语言训练数据生成",stage:"Seed",market:"AI 训练数据",signals:["两轮一致验证","LLM 基础设施"],source_url:"",vc_appeal:"中"},
-  {name:"Wand",founder:"Rotem Alaluf",one_liner:"AI 和人类协作重塑劳动力市场",stage:"Seed",market:"AI + 人力协作",signals:["Talent marketplace","B2B 服务行业"],source_url:"",vc_appeal:"中"},
+  {name:"GLNK",founder:"Rayan Ghandour, Raouf Abujaber",one_liner:"AI 驱动的医疗协作平台",stage:"unknown",market:"Healthcare B2B",signals:["YC W25","两轮交叉验证","双创始人"],source_url:"https://www.extruct.ai/data-room/ycombinator-companies-w25",vc_appeal:"高"},
+  {name:"Superdesign",founder:"Jason Zhou",one_liner:"从自然语言 prompt 生成 UI 原型",stage:"unknown",market:"AI 产品设计",signals:["YC W25","设计工具","开发者生产力"],source_url:"https://wellows.com/blog/ai-startups",vc_appeal:"高"},
+  {name:"Wand",founder:"Rotem Alaluf",one_liner:"AI 与人力协作重塑劳动力市场",stage:"unknown",market:"AI + 人力协作",signals:["YC W25","B2B 服务","Talent marketplace"],source_url:"https://www.linkedin.com/posts/ollieforsyth_meet-y-combinators-latest-batch-of-startups-activity-7370824601217691648-TF-3",vc_appeal:"高"},
+  {name:"Overstand",founder:"Sejoon Chang",one_liner:"为忙碌高管生成客户沟通摘要",stage:"unknown",market:"B2B SaaS / 企业通讯",signals:["YC W25","两轮交叉验证"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
+  {name:"Polco",founder:"Nick Mastronardi",one_liner:"AI 驱动的公共部门数据洞察平台",stage:"unknown",market:"公共部门 AI",signals:["YC W25","政府市场"],source_url:"https://catalaize.substack.com/p/y-combinator-s25-batch-profile-and",vc_appeal:"中"},
+  {name:"Stamp",founder:"unknown",one_liner:"AI 邮件客户端，自动分类和回复邮件",stage:"unknown",market:"企业通讯工具",signals:["YC W25","两轮交叉验证"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
 ];
 
 const BEST5 = [
   {
     rank:1, project: RUN1[0],
-    vc_note: "EdTech + AI 辅导赛道，双创始人 Tyrone Davis III 和 Guang Cui 均可溯源，且在两轮扫描中保持一致验证。智能考试辅导切入高频刚需，东南亚 / 印度 K12 市场付费意愿强，国际化团队背景降低单一市场集中风险。下一步验证留存率和 CAC:LTV 比。"
+    vc_note: "两轮扫描均出现，双创始人 Raouf Abujaber 和 Rayan Ghandour 均可溯源。医疗机构协作是刚需且高度碎片化的市场，YC 背书降低了初期尽调门槛。核心验证点：是否已有付费 pilot 医院或诊所，以及 EHR 集成的推进进度。"
   },
   {
     rank:2, project: RUN1[1],
-    vc_note: "No-code 内部工具平台，创始人 Eshani Mehta 可溯源。Retool / Glide 已验证企业买方意愿，AI-native 差异化在于把原来需要开发者的工作交给业务侧。核心验证点：是否有 ≥3 个付费 pilot 企业客户。"
+    vc_note: "创始人 Salvador Chavez 可溯源，YC W25。拉美和移民社区是传统金融科技覆盖严重不足的白地，合规本身就是护城河，大玩家没有动力进来。关键风险是客户获取成本和监管节奏，需要确认 CAC 和 LTV 是否匹配。"
   },
   {
     rank:3, project: RUN2[1],
-    vc_note: "Fintech + 社区银行，创始人 Salvador Chavez 可溯源。拉美 / 移民社区是传统金融科技覆盖不足的白地，监管护城河天然形成壁垒。关键风险：合规成本和客户获取路径，需确认 CAC 与 LTV 是否匹配。"
+    vc_note: "创始人 Jason Zhou 可溯源，YC W25。从自然语言生成 UI 原型，切入产品经理和设计师的工作流，不需要绑定特定代码框架。需要确认的是黏性：用一次够用还是会持续回来用，复购逻辑是否成立。"
   },
   {
-    rank:4, project: RUN2[7],
-    vc_note: "AI + 人力协作 talent marketplace，创始人 Rotem Alaluf 可溯源。方向与 Scale AI 类似但更轻资产，B2B 服务行业 ROI 论证清晰。最关键验证点：LOI / pilot 企业客户数量，以及 AI 与人力协作的单位经济模型。"
+    rank:4, project: RUN2[2],
+    vc_note: "创始人 Rotem Alaluf 可溯源，YC W25。AI 和人力协作的 talent marketplace，方向和 Scale AI 类似但更轻资产。B2B 服务行业的 ROI 论证清晰，核心验证点是 LOI 客户数量和单位经济模型里 AI 替代人力的比例。"
   },
   {
-    rank:5, project: RUN2[6],
-    vc_note: "多语言 AI 训练数据生成，创始人 Lavanya Bhasin 可溯源，两轮一致验证。LLM 训练数据需求随模型迭代持续增长，多语言覆盖是稀缺供给。需确认数据质量验证机制和是否有企业级 API 付费客户。"
+    rank:5, project: RUN2[3],
+    vc_note: "两轮扫描均出现，创始人 Sejoon Chang 可溯源，YC W25。高管的收件箱是真实痛点，摘要这个切入点门槛低但粘性高。竞争风险是 Gmail 和 Outlook 原生集成，需要确认差异化在哪里，以及 enterprise 合规审查的时间线。"
   },
 ];
 
