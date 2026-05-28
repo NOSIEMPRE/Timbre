@@ -705,7 +705,7 @@ body {
           <div class="pipeline-icon">🔬</div>
           <div class="pipeline-name">深研</div>
           <div class="pipeline-label">founder-research</div>
-          <div class="pipeline-meta">结构化 VC 尽调档案<br>8 节 Markdown + 来源</div>
+          <div class="pipeline-meta">结构化 VC 尽调档案<br>8 节 · 质量评分 · 成本追踪</div>
         </div>
         <div class="pipeline-arrow">→</div>
         <div class="pipeline-step">
@@ -890,14 +890,21 @@ body {
         <div class="qa-num">01</div>
         <h3 class="qa-question">你用什么标准衡量这个 Skill 的输出质量？</h3>
         <p class="qa-body">
-          我在 <code class="code-inline">eval/quality_check.py</code> 中定义了 0–100 分的可量化评分模型，重点衡量四个维度，而非简单统计输出数量：
+          我在 <code class="code-inline">eval/quality_check.py</code> 中实现了 0–100 分的可量化评分模型，分五个加权维度，同时配备了 LLM-as-Judge 二次评审机制：
         </p>
         <ul class="qa-bullets">
-          <li><span class="qa-highlight">信号密度</span>：每个项目的 signals 列表是否包含 ≥2 条可溯源信号（YC 批次、TechCrunch 报道、融资公告等），而非泛泛描述。</li>
-          <li><span class="qa-highlight">创始人可识别性</span>：founder 字段是否为真实姓名。这是 VC 实际工作中第一个需要确认的字段，unknown 意味着该项目无法直接进入 outreach 流程。</li>
-          <li><span class="qa-highlight">来源多样性</span>：同一项目是否跨多个数据源出现（HN + TechCrunch + YC = 强信号）。单来源项目在排序中降权。</li>
-          <li><span class="qa-highlight">阶段精准度</span>：stage 字段是否明确为 Pre-Seed / Seed，而非 "Active" 或 "unknown"。阶段模糊说明信息不足，不应进入最终列表。</li>
+          <li><span class="qa-highlight">节段完整性（40 分）</span>：检测 8 个必须节段是否存在且内容非空——一句话定位、投资亮点、创始人画像、创始团队、公司与产品、业务牵引力、融资信息、近期动态。缺失任一节段或仅写「暂无公开数据」均扣分。</li>
+          <li><span class="qa-highlight">引用密度（25 分）</span>：正文中 <code class="code-inline">[N]</code> 标注数量，对应「信息源」节段中的真实 URL。无引用的表述视为潜在捏造。</li>
+          <li><span class="qa-highlight">风险标注（15 分）</span>：档案中 P0 / P1 / P2 风险标记数量。VC 尽调不能没有负面信号。</li>
+          <li><span class="qa-highlight">内容长度（10 分）</span>：字数 800–5000 视为正常范围，过短说明信息严重不足，过长说明缺乏提炼。</li>
+          <li><span class="qa-highlight">诚实性（5 分）</span>：档案必须包含「暂无公开数据」标注，同时正文需明确提到被研究对象姓名。</li>
         </ul>
+        <p class="qa-body" style="margin-top:0.75rem;">
+          当启发式评分 <strong>&lt; 75 分</strong>时，触发 <span class="qa-highlight">LLM-as-Judge</span> 二次评审：将档案送入独立评审员 prompt，从事实可信度、信息完整性、精准度、风险质量四个维度各打 0–10 分，合并成加权总分并给出文字判断，帮助识别启发式规则无法捕捉的问题（如大段引用来自同一来源、风险分析流于表面）。
+        </p>
+        <p class="qa-body">
+          此外，<code class="code-inline">timbre eval</code> 命令可在不调用任何 API 的情况下离线扫描 vault 内所有档案，按质量分降序输出报告，高亮低分档案及具体问题，是日常档案维护的核心工具。
+        </p>
       </div>
 
       <div class="qa-block" id="q2">
@@ -915,14 +922,16 @@ body {
         <div class="qa-num">03</div>
         <h3 class="qa-question">如果给你两周时间继续打磨，你优先改进哪一个环节？</h3>
         <p class="qa-body">
-          优先改进 <span class="qa-highlight">Stage 2 的创始人识别准确率</span>。当前输出中 founder 字段约 22% 仍为 unknown（已比初版的 60% 大幅改善），这是对 VC 实用性影响最大的缺口——有具名创始人的项目是最容易付诸行动的。
+          在初版交付后，我已完成了三个补强方向：<span class="qa-highlight">可量化质量评分（P0）</span>、<span class="qa-highlight">Session 级成本追踪（P1）</span> 和 <span class="qa-highlight"><code class="code-inline">timbre eval</code> 批量质检命令（P2）</span>。前两轮迭代把"凭感觉"的质量判断替换成了可复现的指标体系，也让每次调研的 token 消耗和美元成本透明可控。
         </p>
         <p class="qa-body">
-          本次交付中已实现了 <span class="qa-highlight">Stage 2.5</span>（定向创始人查找），通过对 unknown 项目补发精准 web_search + 多层正则清洗（过滤月份缩写、公司后缀、URL 片段等），将识别率从 ~40% 提升到 ~78%。
+          接下来的两周，我会优先做三件事：
         </p>
-        <p class="qa-body">
-          下一步改进方向：在 Stage 2.5 之后增加一次 <span class="qa-highlight">LLM 交叉验证</span>——将找到的候选姓名和公司名一起发回给模型，确认"这个人是否真的是这家公司的创始人"，消除剩余的错误归属（如 Miyagi Labs 的创始人被误分配到 Stamp 的情况）。
-        </p>
+        <ul class="qa-bullets">
+          <li><span class="qa-highlight">Stage 2.5 LLM 交叉验证</span>：Stage 2.5 已将创始人识别率从 ~40% 提升到 ~78%，但剩余 22% 的错误归属（如候选姓名来自同名公司的非创始人员工）需要额外一次 LLM 核实——把候选姓名和公司名一起发回模型，确认是否为真正的创始人，再写入档案。</li>
+          <li><span class="qa-highlight">增量去重机制</span>：目前每次 sourcing 都是独立扫描，跨 session 会重复出现同一批 YC W25 公司。应在 SQLite 记忆层加入项目指纹（公司名 + 创始人名 hash），已研究过的项目自动降权，把新鲜度纳入 vc_appeal 评分。</li>
+          <li><span class="qa-highlight">低质量档案自动重研</span>：将 <code class="code-inline">timbre eval</code> 的输出接入 CI-style 循环——对评分 &lt; 60 分的档案，不仅标记问题，还自动补发缺失维度的定向搜索（如缺少融资信息时触发 Crunchbase 专项查询），在不重跑全流程的前提下提升现有档案质量。</li>
+        </ul>
       </div>
     </section>
 
