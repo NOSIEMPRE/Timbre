@@ -18,7 +18,7 @@
 
 一个**越用越好用**的 Founder Intelligence System，面向一级市场投资团队。
 
-大多数工具给你一次性的答案。Timbre 构建的是知识图谱。每一次 `founder-research` 都向库里写入一个 Markdown 节点，investor 名称自动转为 `[[Benchmark]]`、`[[红杉]]` 等 Obsidian wiki link。研究 20 个项目之后，Graph View 就能呈现任何单次搜索都看不到的东西：*什么投资机构在押注这个赛道*、*哪些 founder 共同被某个 LP 支持*。这种跨 session 的复利效应，才是真正的核心价值。
+大多数工具给你一次性的答案。Timbre 构建的是知识图谱。每一次 `founder-research` 同时写入三种节点：**创始人档案**（founders/）、**投资机构实体页**（investors/）、**赛道概念页**（sectors/）。研究 20 个项目之后，Obsidian Graph View 自动呈现任何单次搜索都看不到的东西：*Sequoia 在这个赛道押注了哪几家*、*哪些 founder 共同被同一个 LP 支持*。这种跨 session 的复利效应，才是真正的核心价值。
 
 ---
 
@@ -27,8 +27,8 @@
 ```
 发现 ──────────────▶  深研 ──────────────▶  沉淀
 vc-sourcing           founder-research       Obsidian wiki
-主动扫描公开网络        结构化 VC 尽调档案      [[investor]] 图谱
-Pre-Seed / Seed        8节 Markdown + 来源     Graph View 聚类
+主动扫描公开网络        结构化 VC 尽调档案      三种节点自动维护
+Pre-Seed / Seed        8节 Markdown + 来源     founders/ · investors/ · sectors/
       ▲                                             │
       └─────────────────────────────────────────────┘
                     越用越好用
@@ -36,9 +36,39 @@ Pre-Seed / Seed        8节 Markdown + 来源     Graph View 聚类
 
 **vc-sourcing** — 主动发现早期项目。不需要公司名，只需一个赛道。并行扫描 HackerNews Show HN、YC W25/S25 批次、ProductHunt 新品、TechCrunch 早期报道、GitHub trending，输出按 vc_appeal 排序的项目列表。
 
-**founder-research** — 实体识别 + 并行搜索 + 综合分析。生成完整的尽调档案，含 `[N]` 来源标注、`P0/P1/P2` 风险分级、Playwright 付费内容访问。保存至 `~/.timbre/profiles/` 或直接落进 Obsidian vault。
+**founder-research** — 实体识别 + 并行搜索 + 综合分析。生成完整的尽调档案，含 `[N]` 来源标注、`P0/P1/P2` 风险分级、Playwright 付费内容访问。每次保存同时更新 index.md 目录、log.md 活动记录、investor 实体页、sector 概念页。
 
 **Stage 2.5 创始人补全** — 当 sourcing 结果中 `founder: unknown` 时，自动对 LinkedIn、Crunchbase、TechCrunch 发起定向搜索，并经过多层名称清洗验证。实测：创始人识别率从约 40% 提升至约 78%。
+
+---
+
+## Obsidian 知识图谱
+
+每次 `founder-research` 写入的不是一个文件，而是整个图谱的一次更新：
+
+```
+Timbre/                        ← Obsidian vault 子目录
+├── SCHEMA.md                  ← Vault 说明书（含操作指令，Claude Code 可直接读）
+├── index.md                   ← 主目录，每行一个 founder，自动维护
+├── log.md                     ← 活动记录，append-only
+├── founders/                  ← 创始人尽调档案
+│   ├── alex-mackenzie-clay-2026-01-15.md
+│   └── liang-wenfeng-deepseek-2026-01-20.md
+├── investors/                 ← 投资机构实体页（从 [[]] 链接自动生成）
+│   ├── Sequoia.md             ← "Portfolio: Clay · DeepSeek · ..."
+│   ├── a16z.md
+│   └── 红杉中国.md
+└── sectors/                   ← 赛道概念页（从 entity.market 自动生成）
+    ├── AI-Infrastructure.md
+    └── GTM-Automation.md
+```
+
+研究 20 个 founder 之后，在 Obsidian Graph View 里：
+- `Sequoia` 节点连接到它投过的所有 founder
+- `AI-Infrastructure` 节点聚合该赛道的全部公司
+- 在 vault 里问 Claude Code：`query: 哪些 investor 在 AI Infrastructure 赛道出现了两次以上？`
+
+> 设计参考：[Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)（2026.04）
 
 ---
 
@@ -145,13 +175,16 @@ timbre › 1
 ```
 timbre › 研究一下梁文锋
 
-  ● Stage 1  实体识别…
-  ● Stage 2a 制定调研计划…   (生成 12 条 query / 4 个维度)
-  ● Stage 2b 并行搜索…       (12 线程同步运行)
-  ● Stage 3  综合分析…
+  ▸ 实体识别中       → 梁文锋 · DeepSeek  (置信度 90%)
+  ▸ 制定搜索计划     计划：创始人画像 · 创始团队图谱 · 产品与商业模式 · 融资信息  共 14 条搜索
+  ▸ 并行搜索中       ............
+  ▸ 整理搜索结果
 
-  ✓  档案已保存  →  ~/.timbre/profiles/deepseek-liang-wenfeng.md
-     质量评分：91 / 100
+  质量评分  91分  字数 2840  来源 18
+
+  更新知识图谱：投资方页面 3 个 · 赛道页面 [AI / 大模型]
+
+  ✓  已保存至 ~/.timbre/profiles/founders/liang-wenfeng-deepseek-2026-05-28.md
 ```
 
 档案片段：
@@ -161,7 +194,8 @@ timbre › 研究一下梁文锋
 founder: "梁文锋"
 founder_en: "Liang Wenfeng"
 company: "DeepSeek / 幻方科技"
-stage: "独立运营"
+created: 2026-05-28
+tags: ["founder-profile"]
 ---
 
 ## 核心判断
@@ -173,10 +207,26 @@ stage: "独立运营"
 P0  监管风险：模型能力公开展示受国内审查政策约束
 P1  人才留存：核心研究员在顶级实验室报价面前的稳定性
 
+## 融资信息
+
+| 轮次 | 金额 | 日期 | 领投方 | 来源 |
+|------|------|------|--------|------|
+| 战略融资 | 未披露 | 2024 | [[红杉中国]] | [3] |
+
 ## 信息源
 
 [1] https://mp.weixin.qq.com/s/...
 [3] https://www.theinformation.com/articles/...
+```
+
+同步生成的 `investors/红杉中国.md`：
+
+```markdown
+# 红杉中国
+
+## Portfolio Companies (researched by Timbre)
+
+- [[DeepSeek / 幻方科技]] · 梁文锋 · AI / 大模型 (2026-05-28)
 ```
 
 ---
@@ -233,6 +283,10 @@ timbre › 融资情况能详细说说吗
 timbre › 红杉投了哪些 AI 公司
 timbre › Benchmark 的 AI portfolio
 
+# 知识图谱查询（在 Obsidian vault 里问 Claude Code）
+query: 哪些 investor 在 AI Infrastructure 赛道出现了两次以上？
+lint:  找出所有没有对应页面的 [[wikilink]]
+
 # 档案与记忆
 timbre › 查看我保存的档案
 timbre › 退出
@@ -247,11 +301,12 @@ timbre › 退出
 ```
 Timbre/
 ├── SKILL.md                         行为规范文档——粘贴至任意 Claude 环境即可使用
-├── examples/claude_api_demo.py            完整 Anthropic API agentic loop 示例
+├── examples/claude_api_demo.py      完整 Anthropic API agentic loop 示例
 ├── deliverable.html                 互动版 VC sourcing 演示报告
 ├── timbre/
 │   ├── cli.py                       交互式 CLI（asyncio + Rich）
 │   ├── skill_api.py                 Anthropic API Tool 定义 + 分发器
+│   ├── vault.py                     Obsidian 知识图谱维护（Karpathy LLM-wiki 模式）
 │   ├── observe.py                   Langfuse 追踪封装（未配置时零开销）
 │   ├── pipelines/
 │   │   ├── sourcing.py              vc-sourcing：多源扫描 + Stage 2.5 创始人补全

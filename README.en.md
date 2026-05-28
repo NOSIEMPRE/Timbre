@@ -18,7 +18,7 @@
 
 A compound intelligence system for VC sourcing and founder research — **the more you use it, the more valuable it gets.**
 
-Most tools give you a one-shot answer. Timbre builds a knowledge graph. Every `founder-research` session writes a Markdown node with `[[Benchmark]]` and `[[a16z]]` wiki links. After 20 profiles, Obsidian Graph View surfaces patterns no single search can find: *who is betting on this sector*, *which founders share the same LP*. That cross-session compounding is the core value — not any individual query.
+Most tools give you a one-shot answer. Timbre builds a knowledge graph. Every `founder-research` session writes to three node types simultaneously: **founder profiles** (founders/), **investor entity pages** (investors/), and **sector concept pages** (sectors/). After 20 sessions, Obsidian Graph View surfaces patterns no single search can find: *which firms are co-betting on a sector*, *which founders share the same LP*. That cross-session compounding is the core value — not any individual query.
 
 ---
 
@@ -27,8 +27,8 @@ Most tools give you a one-shot answer. Timbre builds a knowledge graph. Every `f
 ```
 Discover ──────────────▶  Research ──────────────▶  Compound
 vc-sourcing               founder-research           Obsidian wiki
-Scan public web           Structured due diligence   [[investor]] graph
-Pre-Seed / Seed           8-section Markdown         Graph View clustering
+Scan public web           Structured due diligence   Three node types, auto-maintained
+Pre-Seed / Seed           8-section Markdown         founders/ · investors/ · sectors/
       ▲                                                     │
       └─────────────────────────────────────────────────────┘
                       Gets better with every use
@@ -36,9 +36,39 @@ Pre-Seed / Seed           8-section Markdown         Graph View clustering
 
 **vc-sourcing** — proactive startup discovery across HackerNews Show HN, YC W25/S25 batches, ProductHunt launches, TechCrunch seed coverage, and GitHub trending. No company name needed — just a vertical.
 
-**founder-research** — entity resolution + parallel search + synthesis. Outputs a full profile with `[N]` source citations, `P0/P1/P2` risk tiers, and paywall access via Playwright. Saves to `~/.timbre/profiles/` or directly into your Obsidian vault.
+**founder-research** — entity resolution + parallel search + synthesis. Outputs a full profile with `[N]` source citations, `P0/P1/P2` risk tiers, and paywall access via Playwright. Every save simultaneously updates index.md, log.md, investor entity pages, and sector concept pages.
 
 **Stage 2.5 founder enrichment** — when a sourcing result has `founder: unknown`, Timbre auto-runs a targeted search against LinkedIn, Crunchbase, and TechCrunch with multi-layer name validation. In testing: founder identification improved from ~40% to ~78%.
+
+---
+
+## Obsidian Knowledge Graph
+
+Every `founder-research` doesn't just write one file — it runs a full vault maintenance pass:
+
+```
+Timbre/                        ← Obsidian vault subfolder
+├── SCHEMA.md                  ← Vault schema + operations guide (readable by Claude Code)
+├── index.md                   ← Master catalog, one row per founder, auto-maintained
+├── log.md                     ← Activity log, append-only
+├── founders/                  ← Founder due-diligence profiles
+│   ├── alex-mackenzie-clay-2026-01-15.md
+│   └── liang-wenfeng-deepseek-2026-01-20.md
+├── investors/                 ← Investor entity pages (auto-created from [[links]])
+│   ├── Sequoia.md             ← "Portfolio: Clay · DeepSeek · ..."
+│   ├── a16z.md
+│   └── 红杉中国.md
+└── sectors/                   ← Sector concept pages (auto-created from entity.market)
+    ├── AI-Infrastructure.md
+    └── GTM-Automation.md
+```
+
+After 20 sessions in Obsidian Graph View:
+- `Sequoia` node connects to every founder it has backed
+- `AI-Infrastructure` node clusters all companies in that sector
+- Open Claude Code in the vault and ask: `query: which investors appear in more than two AI Infrastructure profiles?`
+
+> Design reference: [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) (April 2026)
 
 ---
 
@@ -145,13 +175,16 @@ timbre › 1
 ```
 timbre › 研究 Clay 的 CEO
 
-  ● Stage 1  实体识别…
-  ● Stage 2a 制定调研计划…   (12 queries / 4 dimensions)
-  ● Stage 2b 并行搜索…       (12 threads)
-  ● Stage 3  综合分析…
+  ▸ 实体识别中       → Alex MacKenzie · Clay  (置信度 90%)
+  ▸ 制定搜索计划     计划：创始人画像 · 创始团队图谱 · 产品与商业模式 · 融资信息  共 14 条搜索
+  ▸ 并行搜索中       ............
+  ▸ 整理搜索结果
 
-  ✓  档案已保存  →  ~/.timbre/profiles/clay-alex-mackenzie.md
-     质量评分：87 / 100
+  质量评分  87分  字数 2340  来源 14
+
+  更新知识图谱：投资方页面 2 个 · 赛道页面 [GTM Automation]
+
+  ✓  已保存至 ~/.timbre/profiles/founders/alex-mackenzie-clay-2026-05-28.md
 ```
 
 Profile excerpt:
@@ -160,17 +193,34 @@ Profile excerpt:
 ---
 founder: "Alex MacKenzie"
 company: "Clay"
-stage: "Series B"
+created: 2026-05-28
+tags: ["founder-profile"]
 ---
 
 ## 核心判断
 
-Clay 正在将 GTM 自动化重新定义为数据编排层……[1]
+[[Clay]] 正在将 GTM 自动化重新定义为数据编排层……[1]
 
 ## 风险分级
 
 P0  竞争壁垒：Salesforce/HubSpot 均可复制核心功能，护城河取决于数据网络效应建立速度
 P1  创始人集中度：Alex 强个人品牌驱动社区，离开风险需评估
+
+## 融资信息
+
+| 轮次 | 金额 | 日期 | 领投方 | 来源 |
+|------|------|------|--------|------|
+| Series B | $46M | 2024 | [[Sequoia]] | [4] |
+```
+
+Auto-generated `investors/Sequoia.md`:
+
+```markdown
+# Sequoia
+
+## Portfolio Companies (researched by Timbre)
+
+- [[Clay]] · Alex MacKenzie · GTM Automation (2026-05-28)
 ```
 
 ---
@@ -227,6 +277,10 @@ timbre › 融资情况能详细说说吗
 timbre › 红杉投了哪些 AI 公司
 timbre › Benchmark 的 AI portfolio
 
+# Knowledge graph queries (run Claude Code inside your Obsidian vault)
+query: which investors appear in more than two AI Infrastructure profiles?
+lint:  find all [[wikilinks]] with no corresponding page
+
 # Memory
 timbre › 查看我保存的档案
 timbre › exit
@@ -241,11 +295,12 @@ Each input goes through a lightweight intent classifier. Timbre routes to sourci
 ```
 Timbre/
 ├── SKILL.md                         Behavioral spec — paste into any Claude environment
-├── examples/claude_api_demo.py            Complete Anthropic API agentic loop demo
+├── examples/claude_api_demo.py      Complete Anthropic API agentic loop demo
 ├── deliverable.html                 Interactive VC sourcing deliverable (demo)
 ├── timbre/
 │   ├── cli.py                       Interactive CLI (asyncio + Rich)
 │   ├── skill_api.py                 Anthropic API tool definitions + dispatcher
+│   ├── vault.py                     Obsidian knowledge graph maintenance (Karpathy LLM-wiki pattern)
 │   ├── observe.py                   Langfuse tracing (no-op if unconfigured)
 │   ├── pipelines/
 │   │   ├── sourcing.py              vc-sourcing: multi-source scan + Stage 2.5 enrichment
