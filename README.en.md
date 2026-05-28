@@ -16,9 +16,9 @@
 
 ---
 
-A compound intelligence system for VC sourcing and founder research — **the more you use it, the more valuable it gets.**
+A Founder Intelligence System for VC teams that gets more useful the more you use it.
 
-Most tools give you a one-shot answer. Timbre builds a knowledge graph. Every `founder-research` session writes to three node types simultaneously: **founder profiles** (founders/), **investor entity pages** (investors/), and **sector concept pages** (sectors/). After 20 sessions, Obsidian Graph View surfaces patterns no single search can find: *which firms are co-betting on a sector*, *which founders share the same LP*. That cross-session compounding is the core value — not any individual query.
+Each `founder-research` run writes a founder profile and also updates the relevant investor pages (investors/) and sector pages (sectors/). After 20 sessions, the Sequoia node in Obsidian Graph View connects to every founder it has backed. The AI Infrastructure node lists every company in that sector you've researched. That kind of cross-session pattern detection is what makes it worth keeping around.
 
 ---
 
@@ -34,17 +34,17 @@ Pre-Seed / Seed           8-section Markdown         founders/ · investors/ · 
                       Gets better with every use
 ```
 
-**vc-sourcing** — proactive startup discovery across HackerNews Show HN, YC W25/S25 batches, ProductHunt launches, TechCrunch seed coverage, and GitHub trending. No company name needed — just a vertical.
+**vc-sourcing** takes a vertical keyword and finds the companies. Scans HackerNews Show HN, YC W25/S25 batches, ProductHunt, TechCrunch seed coverage, and GitHub trending in parallel. No company name needed.
 
-**founder-research** — entity resolution + parallel search + synthesis. Outputs a full profile with `[N]` source citations, `P0/P1/P2` risk tiers, and paywall access via Playwright. Every save simultaneously updates index.md, log.md, investor entity pages, and sector concept pages.
+**founder-research** takes a founder name or company name and produces an 8-section due diligence profile with per-fact source citations, P0/P1/P2 risk flags, and Playwright paywall access. Each save also updates index.md, the matching investor pages, and the sector page.
 
-**Stage 2.5 founder enrichment** — when a sourcing result has `founder: unknown`, Timbre auto-runs a targeted search against LinkedIn, Crunchbase, and TechCrunch with multi-layer name validation. In testing: founder identification improved from ~40% to ~78%.
+**Stage 2.5 founder enrichment** handles the `founder: unknown` cases that sourcing frequently produces. Runs a targeted search against LinkedIn, Crunchbase, and TechCrunch, then filters candidates through multiple name-validation layers. Founder identification went from around 40% to 78% in testing.
 
 ---
 
 ## Obsidian Knowledge Graph
 
-Every `founder-research` doesn't just write one file — it runs a full vault maintenance pass:
+`founder-research` writes to more than just the founder profile. Each run touches the whole graph:
 
 ```
 Timbre/                        ← Obsidian vault subfolder
@@ -76,11 +76,11 @@ After 20 sessions in Obsidian Graph View:
 
 | Mode | Setup | Best for |
 |------|-------|---------|
-| **Paste `SKILL.md`** | Zero install | Claude.ai Projects, Claude Code, Cursor, Codex — any system prompt |
+| **Paste `SKILL.md`** | Zero install | Claude.ai Projects, Claude Code, Cursor, Codex |
 | **Local CLI** | `pipx install` + 2 API keys | Daily research workflow, Obsidian integration |
 | **Anthropic API tool** | `from timbre.skill_api import TOOLS` | Embedding in your own product |
 
-### Mode 1 — Zero Install (Paste to Any Claude Environment)
+### Mode 1: Zero Install (Paste to Any Claude Environment)
 
 Copy the contents of [`SKILL.md`](SKILL.md) and paste into:
 
@@ -88,9 +88,9 @@ Copy the contents of [`SKILL.md`](SKILL.md) and paste into:
 - **Claude Code** → `CLAUDE.md`
 - **Cursor / Codex** → system prompt or rules file
 
-Claude becomes the execution engine. No dependencies, no local model. The SKILL.md is a pure behavioral spec — trigger conditions, step-by-step search strategy, output format rules — that any Claude environment reads and executes.
+Claude becomes the execution engine. No dependencies, no local model. SKILL.md is a pure behavioral spec (trigger conditions, search strategy, output format rules) that any Claude environment reads and executes.
 
-### Mode 2 — Local CLI
+### Mode 2: Local CLI
 
 ```bash
 pipx install git+https://github.com/NOSIEMPRE/Timbre.git
@@ -110,7 +110,7 @@ Supports any OpenAI-compatible endpoint out of the box:
 | Kimi (Moonshot) | `https://api.moonshot.cn/v1` |
 | Ollama (local) | `http://localhost:11434/v1` |
 
-### Mode 3 — Anthropic API Tool
+### Mode 3: Anthropic API Tool
 
 ```python
 import anthropic
@@ -236,7 +236,7 @@ Config is stored at `~/.timbre/.env` and never touches the repo.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `TAVILY_API_KEY` | ✅ | Web search — [app.tavily.com](https://app.tavily.com) (free tier available) |
+| `TAVILY_API_KEY` | ✅ | Web search. [app.tavily.com](https://app.tavily.com) (free tier available) |
 | `ANTHROPIC_API_KEY` | ✅ one of | Claude models |
 | `OPENAI_API_KEY` | ✅ one of | DeepSeek / Qwen / Kimi / Ollama |
 | `OPENAI_BASE_URL` | With above | e.g. `https://api.deepseek.com/v1` |
@@ -244,7 +244,7 @@ Config is stored at `~/.timbre/.env` and never touches the repo.
 | `OBSIDIAN_VAULT_PATH` | Optional | Save profiles directly into your vault |
 | `OBSIDIAN_SUBFOLDER` | Optional | Default: `Timbre` |
 | `BROWSER_COOKIES_FILE` | Optional | Netscape cookies.txt for paywalled sources |
-| `LANGFUSE_SECRET_KEY` | Optional | Observability — [langfuse.com](https://langfuse.com) |
+| `LANGFUSE_SECRET_KEY` | Optional | Observability tracing. [langfuse.com](https://langfuse.com) |
 
 **Paywalled content** (The Information, LatePost 晚点, 36Kr Pro, etc.): export cookies from your browser using the *Get cookies.txt LOCALLY* Chrome extension, save as Netscape format, and point `BROWSER_COOKIES_FILE` to the file.
 
@@ -256,7 +256,7 @@ Config is stored at `~/.timbre/.env` and never touches the repo.
 timbre
 ```
 
-Natural language only — no commands to memorize.
+Natural language only. No commands to memorize.
 
 ```
 # Proactive sourcing
@@ -286,7 +286,7 @@ timbre › 查看我保存的档案
 timbre › exit
 ```
 
-Each input goes through a lightweight intent classifier. Timbre routes to sourcing, research, follow-up, investor lookup, or memory — no mode switching needed.
+Each input goes through a lightweight intent classifier. Timbre routes to sourcing, research, follow-up, investor lookup, or memory. No mode switching needed.
 
 ---
 
@@ -326,13 +326,13 @@ Timbre/
 │       └── founder_profile.yaml     Stage 3 synthesis template
 ```
 
-> All agent behavior lives in `prompts/`. Changing how Timbre researches or writes requires no code changes — only YAML edits.
+> All agent behavior lives in `prompts/`. Changing how Timbre researches or writes is a YAML edit, not a code change.
 
 ---
 
 ## Known Limitations
 
-Timbre surfaces **public information only**. Compensation, internal dynamics, and cap table details sit behind paid platforms (Tianyancha, Qichacha, Crunchbase, PitchBook) — configure the relevant cookies and `browse_url` will fetch those pages directly.
+Timbre surfaces **public information only**. Compensation, internal dynamics, and cap table details sit behind paid platforms (Tianyancha, Qichacha, Crunchbase, PitchBook). Configure the relevant cookies and `browse_url` will fetch those pages directly.
 
 LinkedIn penetration is lower in China, making domestic team org charts sparse. Funding data typically lags reality by 3–6 months. These are data-source ceilings the tool cannot solve.
 
@@ -344,7 +344,7 @@ When a product name differs from the company name (e.g., "Claude" vs "Anthropic"
 
 Python 3.9+ · asyncio · [Tavily](https://tavily.com) · Playwright · SQLite FTS5 · [Rich](https://github.com/Textualize/rich) · [Langfuse](https://langfuse.com) (optional)
 
-Model: any OpenAI-compatible endpoint — Anthropic Claude · DeepSeek · Qwen · Kimi · GLM · Ollama
+Model: any OpenAI-compatible endpoint. Anthropic Claude · DeepSeek · Qwen · Kimi · GLM · Ollama
 
 ---
 
