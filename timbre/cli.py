@@ -16,6 +16,8 @@ load_dotenv()
 from rich.console import Console
 from rich.markup import escape
 
+console = Console()
+
 from timbre.pipelines.founder_research import run_founder_research
 from timbre.memory.store import remember, list_all
 from timbre.providers import get_provider
@@ -522,7 +524,7 @@ _PROVIDERS = [
 ]
 
 _DEFAULT_MODELS = {
-    "anthropic": "claude-sonnet-4-6",
+    "anthropic": "claude-opus-4-7",
     "openai":    "gpt-4o",
     "deepseek":  "deepseek-chat",
     "qwen":      "qwen-max",

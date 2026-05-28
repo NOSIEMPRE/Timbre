@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "timbre-agent"
 version = "0.1.0"
-description = "Founder intelligence agent for the Chinese startup ecosystem"
+description = "Founder intelligence agent for VC sourcing and due diligence"
 requires-python = ">=3.9"
 dependencies = [
     "anthropic>=0.30.0",
@@ -16,8 +16,10 @@ dependencies = [
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
     "rich>=13.0.0",
-    "langfuse>=2.0.0",
 ]
+
+[project.optional-dependencies]
+observe = ["langfuse>=2.0.0"]
 
 [project.scripts]
 timbre = "timbre.cli:main_sync"

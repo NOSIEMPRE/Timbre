@@ -6,7 +6,7 @@ import anthropic
 from timbre import observe
 from timbre.tools.registry import Tool
 
-_DEFAULT_MODEL = "claude-sonnet-4-6"
+_DEFAULT_MODEL = "claude-opus-4-7"
 
 
 class AnthropicProvider:
