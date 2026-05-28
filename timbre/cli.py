@@ -22,20 +22,27 @@ from timbre.pipelines.founder_research import run_founder_research
 from timbre.memory.store import remember, list_all
 from timbre.providers import get_provider
 from timbre.eval.quality_check import quality_check
+from timbre.vault import update_vault
 
 # ── Data directory ────────────────────────────────────────────────────────────
 
-def get_output_dir() -> Path:
+def get_vault_dir() -> Path:
+    """Return the Timbre root directory inside the Obsidian vault (or ~/.timbre/profiles)."""
     vault = os.getenv("OBSIDIAN_VAULT_PATH")
     subfolder = os.getenv("OBSIDIAN_SUBFOLDER", "Timbre")
     if vault:
         d = Path(vault) / subfolder
-        d.mkdir(parents=True, exist_ok=True)
-        return d
-    # Default: ~/.timbre/profiles — works regardless of install location
-    d = Path.home() / ".timbre" / "profiles"
+    else:
+        d = Path.home() / ".timbre" / "profiles"
     d.mkdir(parents=True, exist_ok=True)
     return d
+
+
+def get_output_dir() -> Path:
+    """Return the founders/ subfolder for profile files."""
+    founders_dir = get_vault_dir() / "founders"
+    founders_dir.mkdir(parents=True, exist_ok=True)
+    return founders_dir
 
 
 # ── File helpers ──────────────────────────────────────────────────────────────
@@ -232,12 +239,24 @@ def make_send():
 
 
 def list_profiles():
-    d = get_output_dir()
-    files = sorted([f for f in d.iterdir() if f.suffix == ".md"], reverse=True)
+    vault_dir = get_vault_dir()
+    founders_dir = vault_dir / "founders"
+    files = sorted(
+        [f for f in founders_dir.iterdir() if f.suffix == ".md"] if founders_dir.exists() else [],
+        reverse=True,
+    )
+    investors_dir = vault_dir / "investors"
+    investor_pages = len(list(investors_dir.glob("*.md"))) if investors_dir.exists() else 0
+    sectors_dir = vault_dir / "sectors"
+    sector_pages = len(list(sectors_dir.glob("*.md"))) if sectors_dir.exists() else 0
+
     if not files:
         console.print("  [dim]还没有保存的档案。[/dim]")
         return
-    console.print(f"  [bold]已保存档案 ({len(files)}):[/bold]\n")
+    console.print(f"  [bold]知识图谱 — 见微·Timbre[/bold]\n")
+    console.print(f"  [cyan]创始人档案[/cyan] {len(files)} 个  ·  "
+                  f"[cyan]投资机构页面[/cyan] {investor_pages} 个  ·  "
+                  f"[cyan]赛道概念页[/cyan] {sector_pages} 个\n")
     for f in files:
         console.print(f"  [green]·[/green] {f.stem}  [dim]({round(f.stat().st_size / 1024)} KB)[/dim]")
 
@@ -472,14 +491,32 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
     out_dir = get_output_dir()
     filename = build_filename(entity) if entity else f"profile-{int(datetime.now().timestamp())}.md"
     filepath = out_dir / filename
-    content = build_frontmatter(entity) + add_wiki_links(profile, entity) if entity else profile
+    linked_profile = add_wiki_links(profile, entity) if entity else profile
+    content = build_frontmatter(entity) + linked_profile if entity else profile
     filepath.write_text(content, encoding="utf-8")
 
     if entity:
         remember(entity, str(filepath))
+        # Karpathy-pattern vault maintenance: index + log + investor pages + sector page
+        vault_summary = update_vault(
+            vault_dir=get_vault_dir(),
+            entity=entity,
+            profile_text=linked_profile,
+            filename=filename,
+        )
+        investors = vault_summary.get("investors_updated") or []
+        sector = vault_summary.get("sector_updated")
+        extras = []
+        if investors:
+            extras.append(f"投资方页面 {len(investors)} 个")
+        if sector:
+            extras.append(f"赛道页面 [{sector}]")
+        if extras:
+            console.print(f"  [dim]  更新知识图谱：{' · '.join(extras)}[/dim]")
 
     vault = os.getenv("OBSIDIAN_VAULT_PATH")
-    display = f"{vault}/{os.getenv('OBSIDIAN_SUBFOLDER', 'Timbre')}/{filename}" if vault else str(filepath)
+    subfolder = os.getenv("OBSIDIAN_SUBFOLDER", "Timbre")
+    display = f"{vault}/{subfolder}/founders/{filename}" if vault else str(filepath)
     console.print(f"\n  [green]✓[/green]  已保存至 [bold]{display}[/bold]\n")
 
     return {"entity": entity, "profile": profile, "profile_path": str(filepath)} if entity else session_ctx

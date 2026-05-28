@@ -194,6 +194,8 @@ async def _handle_founder_research(
     founder = entity.get("founder", "")
     company = entity.get("company", "")
 
+    from timbre.vault import update_vault
+
     metrics = quality_check(profile, entity)
     saved_to: str | None = None
 
@@ -201,9 +203,12 @@ async def _handle_founder_research(
         vault = os.getenv("OBSIDIAN_VAULT_PATH")
         subfolder = os.getenv("OBSIDIAN_SUBFOLDER", "Timbre")
         if vault:
-            output_dir = Path(vault) / subfolder
+            vault_dir = Path(vault) / subfolder
         else:
-            output_dir = Path.home() / ".timbre" / "profiles"
+            vault_dir = Path.home() / ".timbre" / "profiles"
+
+        # Profiles now live in founders/ subfolder (Karpathy-pattern)
+        output_dir = vault_dir / "founders"
         output_dir.mkdir(parents=True, exist_ok=True)
 
         date = datetime.now().strftime("%Y-%m-%d")
@@ -216,7 +221,7 @@ async def _handle_founder_research(
         filename = f"{f_slug}-{c_slug}-{date}.md"
         filepath = output_dir / filename
 
-        # Add a minimal YAML front-matter for Obsidian
+        # YAML front-matter
         lines = ["---"]
         if founder and founder != company:
             lines.append(f'founder: "{founder}"')
@@ -229,7 +234,7 @@ async def _handle_founder_research(
         ]
         frontmatter = "\n".join(lines)
 
-        # Wrap first occurrence of company name in Obsidian wiki-link
+        # Wrap first occurrence of company name in wiki-link
         profile_linked = re.sub(
             rf"(?<!\[\[)\b{re.escape(company)}\b(?!\]\])",
             f"[[{company}]]",
@@ -239,6 +244,14 @@ async def _handle_founder_research(
 
         filepath.write_text(frontmatter + profile_linked, encoding="utf-8")
         saved_to = str(filepath)
+
+        # Karpathy-pattern vault maintenance: index + log + investor pages + sector page
+        update_vault(
+            vault_dir=vault_dir,
+            entity=entity,
+            profile_text=profile_linked,
+            filename=filename,
+        )
 
     return {
         "founder": founder,
