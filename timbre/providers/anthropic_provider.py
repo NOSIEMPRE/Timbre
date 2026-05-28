@@ -3,7 +3,7 @@ import json
 import os
 from typing import Callable
 import anthropic
-from timbre import observe
+from timbre import observe, session
 from timbre.tools.registry import Tool
 
 _DEFAULT_MODEL = "claude-opus-4-7"
@@ -26,6 +26,7 @@ class AnthropicProvider:
             )
 
         resp = await asyncio.to_thread(_call)
+        session.add_usage(self.model, resp.usage.input_tokens, resp.usage.output_tokens)
         return resp.content[0].text
 
     async def react_loop(
@@ -54,6 +55,7 @@ class AnthropicProvider:
                 )
 
             resp = await asyncio.to_thread(_call)
+            session.add_usage(self.model, resp.usage.input_tokens, resp.usage.output_tokens)
             observe.generation(
                 tr, name="llm_call", model=self.model,
                 input=messages, output=str(resp.content),
@@ -90,4 +92,5 @@ class AnthropicProvider:
             model=self.model, max_tokens=8192, system=system,
             messages=messages + [{"role": "user", "content": "请根据以上信息完成输出。"}],
         )
+        session.add_usage(self.model, final.usage.input_tokens, final.usage.output_tokens)
         return final.content[0].text if final.content else ""

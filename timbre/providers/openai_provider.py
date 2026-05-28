@@ -3,7 +3,7 @@ import json
 import os
 from typing import Callable
 from openai import AsyncOpenAI
-from timbre import observe
+from timbre import observe, session
 from timbre.tools.registry import Tool
 
 
@@ -24,6 +24,8 @@ class OpenAIProvider:
                 {"role": "user", "content": user},
             ],
         )
+        if resp.usage:
+            session.add_usage(self.model, resp.usage.prompt_tokens, resp.usage.completion_tokens)
         return resp.choices[0].message.content or ""
 
     async def react_loop(
@@ -48,6 +50,8 @@ class OpenAIProvider:
                 messages=messages, tools=openai_tools, tool_choice="auto",
             )
             choice = resp.choices[0]
+            if resp.usage:
+                session.add_usage(self.model, resp.usage.prompt_tokens, resp.usage.completion_tokens)
             observe.generation(
                 tr, name="llm_call", model=self.model,
                 input=messages, output=choice.message.content or "",
@@ -80,4 +84,6 @@ class OpenAIProvider:
             model=self.model, max_tokens=8192,
             messages=messages + [{"role": "user", "content": "请根据以上信息完成输出。"}],
         )
+        if resp.usage:
+            session.add_usage(self.model, resp.usage.prompt_tokens, resp.usage.completion_tokens)
         return resp.choices[0].message.content or ""

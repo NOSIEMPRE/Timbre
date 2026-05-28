@@ -21,8 +21,9 @@ console = Console()
 from timbre.pipelines.founder_research import run_founder_research
 from timbre.memory.store import remember, list_all
 from timbre.providers import get_provider
-from timbre.eval.quality_check import quality_check
+from timbre.eval.quality_check import quality_check, quality_check_llm, LLM_JUDGE_THRESHOLD
 from timbre.vault import update_vault
+from timbre import session
 
 # ── Data directory ────────────────────────────────────────────────────────────
 
@@ -232,9 +233,46 @@ def make_send():
             m = event.get("metrics", {})
             score = m.get("score", 0)
             color = "green" if score >= 80 else "yellow" if score >= 60 else "red"
-            console.print(f"\n  [bold]质量评分[/bold]  [{color}]{score}分[/{color}]  字数 {m.get('word_count', 0)}  来源 {m.get('url_count', 0)}")
+            cite = m.get("citation_count", 0)
+            console.print(
+                f"\n  [bold]质量评分[/bold]  [{color}]{score}分[/{color}]"
+                f"  字数 {m.get('word_count', 0)}"
+                f"  引用 {cite} 处"
+                f"  来源 {m.get('url_count', 0)} 条"
+            )
             for issue in m.get("issues", []):
                 console.print(f"  [yellow]⚠[/yellow]  {issue}")
+        elif t == "eval_llm":
+            r = event.get("result", {})
+            if r.get("error"):
+                console.print(f"  [dim]LLM 评审失败：{r['error']}[/dim]")
+                return
+            ls = r.get("llm_score", 0)
+            color = "green" if ls >= 80 else "yellow" if ls >= 60 else "red"
+            fab = r.get("fabrication_risk", False)
+            fab_tag = "  [red bold]⚠ 捏造风险[/red bold]" if fab else ""
+            console.print(
+                f"  [bold]LLM 评审[/bold]  [{color}]{ls}分[/{color}]"
+                f"  锚定 {r.get('grounding', 0)}/10"
+                f"  完整 {r.get('completeness', 0)}/10"
+                f"  精度 {r.get('precision', 0)}/10"
+                f"  风险 {r.get('risk_quality', 0)}/10"
+                f"{fab_tag}"
+            )
+            verdict = r.get("verdict", "")
+            if verdict:
+                console.print(f"  [dim italic]{verdict}[/dim italic]")
+        elif t == "cost":
+            s = event.get("summary", {})
+            usd = s.get("cost_usd", 0)
+            ti = s.get("input_tokens", 0)
+            to_ = s.get("output_tokens", 0)
+            models = s.get("models", [])
+            model_tag = f"  [dim]{' + '.join(models)}[/dim]" if models else ""
+            console.print(
+                f"  [dim]⊙  用量  {ti:,} in + {to_:,} out tokens"
+                f"  ≈ [bold]${usd:.3f}[/bold][/dim]{model_tag}"
+            )
     return send
 
 
@@ -454,6 +492,10 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
 
   [dim]其他[/dim]
     查看档案  ·  历史记录  ·  退出
+
+  [dim]命令行命令（在 shell 中运行）[/dim]
+    timbre eval   — 扫描所有档案，输出质量报告
+    timbre config — 重新配置 API 密钥
 """)
         return session_ctx
 
@@ -482,11 +524,26 @@ async def handle_query(text: str, session_ctx: dict | None) -> dict | None:
         console.print(f"  [dim]附加链接：{'、'.join(urls)}[/dim]")
 
     send = make_send()
+    session.reset()
     result = await run_founder_research(query or text, send, files, urls)
     profile, entity = result["profile"], result["entity"]
 
+    # ── Heuristic quality check ───────────────────────────────────────────────
     metrics = quality_check(profile, entity)
     send({"type": "eval", "metrics": metrics})
+
+    # ── Cost summary ──────────────────────────────────────────────────────────
+    if session.has_data():
+        send({"type": "cost", "summary": session.summary()})
+
+    # ── LLM-as-Judge (only when heuristic score is below threshold) ───────────
+    if metrics["score"] < LLM_JUDGE_THRESHOLD:
+        try:
+            provider = get_provider()
+            llm_result = await quality_check_llm(profile, entity, provider)
+            send({"type": "eval_llm", "result": llm_result})
+        except Exception as e:
+            send({"type": "eval_llm", "result": {"error": str(e)}})
 
     out_dir = get_output_dir()
     filename = build_filename(entity) if entity else f"profile-{int(datetime.now().timestamp())}.md"
@@ -689,9 +746,93 @@ def config():
     console.print("\n  运行 [bold cyan]timbre[/bold cyan] 开始使用。\n")
 
 
+def eval_profiles():
+    """
+    `timbre eval` — scan all saved founder profiles and show a quality report.
+
+    Runs the heuristic quality_check on every profile in the vault and prints
+    a ranked table. Profiles scoring below LLM_JUDGE_THRESHOLD are flagged.
+    No API calls are made.
+    """
+    import yaml
+
+    vault_dir = get_vault_dir()
+    founders_dir = vault_dir / "founders"
+    if not founders_dir.exists():
+        console.print("  [dim]还没有保存的档案。[/dim]")
+        return
+
+    files = sorted(
+        [f for f in founders_dir.iterdir() if f.suffix == ".md"],
+        reverse=True,
+    )
+    if not files:
+        console.print("  [dim]还没有保存的档案。[/dim]")
+        return
+
+    console.print(f"\n  [bold cyan]Timbre Eval[/bold cyan]  质量报告  [dim]({len(files)} 个档案)[/dim]\n")
+
+    results = []
+    for filepath in files:
+        text = filepath.read_text(encoding="utf-8")
+        body = re.sub(r"^---\n.*?\n---\n", "", text, flags=re.DOTALL).strip()
+        entity: dict = {}
+        fm_m = re.match(r"^---\n(.+?)\n---", text, re.DOTALL)
+        if fm_m:
+            for line in fm_m.group(1).splitlines():
+                if ":" in line:
+                    k, _, v = line.partition(":")
+                    entity[k.strip()] = v.strip().strip('"').strip("'")
+        metrics = quality_check(body, entity)
+        results.append((filepath.stem, metrics))
+
+    # Sort by score ascending (worst first)
+    results.sort(key=lambda x: x[1]["score"])
+
+    scores = []
+    for stem, m in results:
+        score = m["score"]
+        scores.append(score)
+        color = "green" if score >= 80 else "yellow" if score >= LLM_JUDGE_THRESHOLD else "red"
+        flag = "[red bold]⚠[/red bold]" if score < LLM_JUDGE_THRESHOLD else "[dim]·[/dim]"
+        dims = m.get("dimensions", {})
+        dim_bar = (
+            f"节段 {dims.get('sections',0):2}/40  "
+            f"引用 {dims.get('citations',0):2}/25  "
+            f"风险 {dims.get('risk_flags',0):2}/15"
+        )
+        # Row 1: flag + name + score
+        console.print(
+            f"  {flag} [{color}]{escape(stem[:55])}[/{color}]"
+            f"  [{color}]{score}分[/{color}]"
+        )
+        # Row 2: dimension breakdown + stats
+        console.print(f"       [dim]{dim_bar}  ·  {m['word_count']}字  {m['citation_count']}处引用[/dim]")
+        # Row 3: top issues
+        if m["issues"]:
+            issue_parts = [escape(i) for i in m["issues"][:3]]
+            extra = f"  …+{len(m['issues'])-3}" if len(m["issues"]) > 3 else ""
+            console.print(f"       [dim]{'  ·  '.join(issue_parts)}{extra}[/dim]")
+        console.print()
+
+    avg = sum(scores) / len(scores) if scores else 0
+    below = sum(1 for s in scores if s < LLM_JUDGE_THRESHOLD)
+    console.print("  " + "─" * 60)
+    console.print(
+        f"\n  平均分 [bold]{avg:.0f}[/bold]"
+        f"  ·  高质量（≥80）{sum(1 for s in scores if s >= 80)} 个"
+        f"  ·  待改进（<{LLM_JUDGE_THRESHOLD}）[{'red' if below else 'dim'}]{below}[/{'red' if below else 'dim'}] 个"
+    )
+    if below:
+        console.print(f"\n  [dim]⚠  红色档案建议重新运行 founder-research 以提升质量。[/dim]")
+    console.print()
+
+
 def main_sync():
     if len(sys.argv) > 1 and sys.argv[1] == "config":
         config()
+    elif len(sys.argv) > 1 and sys.argv[1] == "eval":
+        eval_profiles()
     else:
         try:
             asyncio.run(main())
