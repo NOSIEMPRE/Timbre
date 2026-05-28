@@ -16,9 +16,11 @@
 
 ---
 
-A Founder Intelligence System for VC teams that gets more useful the more you use it.
+Early-stage sourcing is manual, repetitive, and leaky. Teams scan HN, skim TechCrunch, and page through YC batches every week — coverage stays thin, and whatever you learn doesn't carry over to the next session.
 
-Each `founder-research` run writes a founder profile and also updates the relevant investor pages (investors/) and sector pages (sectors/). After 20 sessions, the Sequoia node in Obsidian Graph View connects to every founder it has backed. The AI Infrastructure node lists every company in that sector you've researched. That kind of cross-session pattern detection is what makes it worth keeping around.
+Timbre fixes two things: **coverage** and **memory**. It's a Founder Intelligence System built for primary market investors, with three layers working together: proactively discover Pre-Seed / Seed companies from public sources (no company name needed), generate structured due diligence profiles on specific founders (source-anchored facts, P0/P1/P2 risk flags), and automatically compound every research session into an Obsidian knowledge graph.
+
+The compounding is the point. Every `founder-research` run updates investor entity pages (investors/) and sector pages (sectors/) alongside the founder profile. After 20 sessions, the Sequoia node in Obsidian Graph View connects to every founder it has backed. The AI Infrastructure node lists every company in that sector you've researched. That kind of cross-session pattern recognition is impossible with one-off searches.
 
 ---
 

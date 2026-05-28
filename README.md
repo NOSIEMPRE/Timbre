@@ -16,9 +16,11 @@
 
 ---
 
-面向一级市场投资团队的 Founder Intelligence System，**越用越好用**。
+早期 sourcing 是体力活。每周手动刷 HN、过 YC 批次、看 TechCrunch，覆盖面仍然有限；好不容易研究出来的结论，下周又得从零开始找。
 
-每次 `founder-research` 跑完，除了生成创始人档案，还会顺手更新投资机构页（investors/）和赛道页（sectors/）。研究 20 个项目之后，Obsidian Graph View 里的 Sequoia 节点会连到它投过的每一家，AI Infrastructure 节点下面会列着这个赛道研究过的所有公司。靠单次搜索是看不到这些的。
+Timbre 解决两件事：**覆盖面**和**记忆**。它是一个面向一级市场投资团队的 Founder Intelligence System，三层协同运作：主动扫描公开网络发现 Pre-Seed / Seed 项目（无需提前知道公司名），对指定创始人生成结构化尽调档案（每条事实标来源、风险按 P0/P1/P2 分级），并把每次研究结果自动沉淀进 Obsidian 知识图谱。
+
+沉淀是关键。每次 `founder-research` 跑完，系统会自动更新投资机构实体页（investors/）和赛道页（sectors/）。研究 20 个项目之后，Obsidian Graph View 里的 Sequoia 节点会连到它投过的每一家，AI Infrastructure 节点下面会列着这个赛道研究过的所有公司。这种跨 session 的模式，靠单次搜索永远看不到。
 
 ---
 
