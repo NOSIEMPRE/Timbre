@@ -10,19 +10,19 @@
 
 Timbre 是一个**会随使用积累价值的 Founder Intelligence System**，面向一级市场投资团队。
 
-它的核心不是单次查询，而是三层复合能力的协同：
+三层能力协同工作：
 
 ```
 发现  ──────────▶  深研  ──────────▶  沉淀
 vc-sourcing        founder-research    Obsidian wiki
-主动扫描公开网络     结构化 VC 尽调档案   [[investor]] 图谱
-Pre-Seed/Seed      8节 Markdown 输出    Graph View 聚类
+主动扫描公开网络     结构化 VC 尽调档案   三种节点自动维护
+Pre-Seed/Seed      8节 Markdown 输出    founders/ · investors/ · sectors/
       ▲                                      │
       └──────────────────────────────────────┘
                   越用越好用
 ```
 
-**复利机制**：每一次 founder-research 都向知识库写入一个 Markdown 节点，investor 名称自动转为 `[[Benchmark]]`、`[[a16z]]` 等 Obsidian wiki link。随着研究积累，Graph View 会自动呈现"谁在押这个赛道"、"哪些 founder 共同被某个 LP 支持"等跨公司洞察——这是任何单次搜索工具无法给出的。
+**复利机制**：每次 founder-research 跑完，除了写创始人档案（founders/），还会更新投资机构实体页（investors/）和赛道概念页（sectors/）。研究 20 个项目之后，Obsidian Graph View 里的 Sequoia 节点会连到它投过的每一家，AI Infrastructure 节点下会列着这个赛道研究过的所有公司。靠单次搜索是看不到这些的。
 
 **三种触发模式：**
 
@@ -77,7 +77,7 @@ Pre-Seed/Seed      8节 Markdown 输出    Graph View 聚类
 
 触发后，按以下步骤执行。每步使用 web_search（或同等搜索工具）：
 
-### Step 1 — 多源并行搜索
+### Step 1: 多源并行搜索
 
 **必搜的核心 query 集**（8–12 条，尽量并行）：
 
@@ -106,7 +106,7 @@ demo day 2025 [theme] AI startup accelerator
 | GitHub trending | 技术牵引力信号 | OSS 项目的早期商业化路径 |
 | 加速器 Demo Day | 批量机构验证信号 | 与 YC 互补，覆盖 Techstars 等 |
 
-### Step 2 — 提取与评分
+### Step 2: 提取与评分
 
 对搜索结果逐条阅读，**只提取满足以下全部条件的项目**：
 
@@ -141,7 +141,7 @@ why         一句话说明投资吸引力或核心风险（≤30字）
 
 **输出数量上限：12 个**（宁少勿滥，不凑数）。
 
-### Step 3 — 排序与展示
+### Step 3: 排序与展示
 
 按 vc_appeal **高 > 中 > 低** 排序，使用以下格式输出：
 
@@ -236,7 +236,7 @@ vc-sourcing 输出列表
         ▼
 founder-research  →  8节 Markdown 尽调档案
                       带 [N] 来源标注、P0/P1/P2 风险分级
-                      自动保存至 Obsidian vault 或 ~/.timbre/profiles/
+                      保存至 founders/ · 同步更新 investors/ + sectors/
 ```
 
 两个 Skill 共享同一套工具集（web_search、browse_url、read_file），但分工清晰：
@@ -252,7 +252,8 @@ SKILL.md                              本文档（行为规范，可独立导入
 timbre/pipelines/sourcing.py          可选 Python 加速后端
 timbre/pipelines/founder_research.py  founder-research pipeline
 timbre/skill_api.py                   Anthropic API Tool 定义（TOOLS + dispatch_tool_call）
-example_claude_api.py                 完整 agentic loop 示例
+timbre/vault.py                       Obsidian 知识图谱维护（index · log · investor/sector 页）
+examples/claude_api_demo.py           完整 agentic loop 示例
 timbre/cli.py                         交互式 CLI（含意图路由、Rich 显示）
 timbre/tools/web_search.py            Tavily 搜索封装
 timbre/memory/store.py                SQLite FTS5 跨 session 记忆
