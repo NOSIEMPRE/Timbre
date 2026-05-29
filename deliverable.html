@@ -655,9 +655,9 @@ body {
     <p class="masthead-sub">Founder Intelligence System — VC Sourcing Skill Deliverable</p>
     <div class="masthead-meta">
       <span><strong>提交人</strong> Isabel Wu</span>
-      <span><strong>日期</strong> 2026-05-27</span>
+      <span><strong>日期</strong> 2026-05-29</span>
       <span><strong>GitHub</strong> <a href="https://github.com/NOSIEMPRE/Timbre" target="_blank">NOSIEMPRE/Timbre</a></span>
-      <span><strong>技术栈</strong> Python · asyncio · Tavily · qwen2.5:7b · Obsidian</span>
+      <span><strong>技术栈</strong> Python · asyncio · Tavily · Claude Opus 4.7 · Obsidian</span>
     </div>
   </div>
 </header>
@@ -735,7 +735,7 @@ body {
       <div class="part-label">Part A · 对话过程与结果</div>
       <h2 class="part-title">对话一：AI Infrastructure</h2>
       <div class="section-rule"></div>
-      <p class="part-desc">从用户输入到最终项目列表的完整过程，包含 14 条并行 query 和 Stage 2.5 创始人补全。</p>
+      <p class="part-desc">从用户输入到最终项目列表的完整过程，包含 8 条并行 query 和 Stage 2.5 创始人补全。</p>
 
       <div class="chat" id="chat1">
         <div class="chat-msg user">
@@ -751,41 +751,35 @@ body {
       </div>
 
       <div class="tool-group">
-        <div class="tool-group-header">Stage 1 — 14 条并行 web_search</div>
+        <div class="tool-group-header">Stage 1 — 8 条并行 web_search</div>
         <div class="tool-list">
-          <span class="tool-chip theme">"AI infrastructure" AI startup seed 2025 early stage</span>
-          <span class="tool-chip theme">HackerNews "Show HN" AI infrastructure 2025</span>
-          <span class="tool-chip">site:news.ycombinator.com "Show HN" AI startup 2025</span>
-          <span class="tool-chip">site:news.ycombinator.com "Show HN" developer tool machine learning 2025</span>
-          <span class="tool-chip">"Y Combinator" W25 S25 AI companies founders list</span>
-          <span class="tool-chip">YCombinator 2025 batch artificial intelligence startups</span>
-          <span class="tool-chip">ProductHunt new AI startup launched 2025</span>
-          <span class="tool-chip">site:techcrunch.com "pre-seed" OR "seed" AI startup 2025</span>
-          <span class="tool-chip">"seed round" "$1M" OR "$2M" OR "$3M" OR "$5M" AI 2025 founder</span>
-          <span class="tool-chip">"raised seed" artificial intelligence startup 2025</span>
-          <span class="tool-chip">"we just launched" OR "excited to announce" AI startup 2025</span>
-          <span class="tool-chip">"building in public" AI SaaS 2025 founder</span>
-          <span class="tool-chip">"github" trending AI tool startup open-source 2025</span>
-          <span class="tool-chip">demo day 2025 AI startup seed pre-seed accelerator</span>
+          <span class="tool-chip theme">site:news.ycombinator.com "Show HN" AI infrastructure startup 2025</span>
+          <span class="tool-chip theme">"Y Combinator" W25 S25 AI infrastructure developer tools founders</span>
+          <span class="tool-chip">seed round AI infrastructure MLOps LLMOps startup 2025 founder</span>
+          <span class="tool-chip">YC W25 S25 AI developer tools infra startups list founders 2025</span>
+          <span class="tool-chip">demo day 2025 AI infrastructure startup seed Techstars accelerator</span>
+          <span class="tool-chip">"we just launched" OR "excited to announce" AI infrastructure 2025</span>
+          <span class="tool-chip">ProductHunt "just launched" AI infrastructure developer tools 2025</span>
+          <span class="tool-chip">site:techcrunch.com "pre-seed" OR "seed" AI infrastructure 2025</span>
         </div>
       </div>
 
       <div class="chat" id="chat1b">
         <div class="chat-msg agent">
           <div class="chat-avatar">T</div>
-          <div class="chat-bubble">多源扫描完成。抓取 65 条原始结果 → Stage 2 LLM 提取与评分（qwen2.5:7b）→ Stage 2.5 补全创始人信息（4 项 unknown，定向查找）</div>
+          <div class="chat-bubble">多源扫描完成。抓取约 50 条原始结果 → Stage 2 提取与评分 → Stage 2.5 补全创始人信息（3 项 unknown，触发定向搜索）</div>
         </div>
-        <div class="chat-note">→ Stage 2.5：4 项触发定向搜索，找到 2 个真实姓名；2 项未能定位，保留 unknown</div>
+        <div class="chat-note">→ Stage 2.5：3 项触发定向搜索，3 个具名团队确认；3 项创始人未公开，保留 unknown</div>
       </div>
 
       <div class="stat-strip">
-        <div class="stat"><div class="stat-n">65</div><div class="stat-label">原始结果</div></div>
+        <div class="stat"><div class="stat-n">~50</div><div class="stat-label">原始结果</div></div>
         <div class="stat-divider"></div>
-        <div class="stat"><div class="stat-n">14</div><div class="stat-label">并行 Query</div></div>
+        <div class="stat"><div class="stat-n">8</div><div class="stat-label">并行 Query</div></div>
         <div class="stat-divider"></div>
         <div class="stat"><div class="stat-n">6</div><div class="stat-label">提取项目</div></div>
         <div class="stat-divider"></div>
-        <div class="stat"><div class="stat-n">4<span>/6</span></div><div class="stat-label">创始人已识别</div></div>
+        <div class="stat"><div class="stat-n">3<span>/6</span></div><div class="stat-label">创始人已识别</div></div>
       </div>
 
       <table class="results-table">
@@ -800,7 +794,7 @@ body {
     <section class="section" id="conv2">
       <h2 class="part-title">对话二：Healthcare AI</h2>
       <div class="section-rule"></div>
-      <p class="part-desc">切换垂直领域，注入医疗 AI 专属 query，验证 Skill 的跨赛道适配能力。</p>
+      <p class="part-desc">切换垂直领域，注入 Healthcare AI 专属 query，验证 Skill 的跨赛道适配能力。</p>
 
       <div class="chat" id="chat2">
         <div class="chat-msg user">
@@ -810,27 +804,41 @@ body {
         <div class="chat-note">→ 意图识别：命中「值得看」+「早期」，垂直词提取：healthcare AI</div>
         <div class="chat-msg agent">
           <div class="chat-avatar">T</div>
-          <div class="chat-bubble">切换到 Healthcare AI 模式，注入垂直专属 query…</div>
+          <div class="chat-bubble">好的，切换到 Healthcare AI 垂直，注入专属 query，正在启动多源扫描…</div>
         </div>
       </div>
 
       <div class="tool-group">
-        <div class="tool-group-header">Stage 1 — Healthcare AI 专属 query（优先注入）</div>
+        <div class="tool-group-header">Stage 1 — 9 条并行 web_search（注入 Healthcare AI 垂直词）</div>
         <div class="tool-list">
-          <span class="tool-chip theme">"healthcare AI" AI startup seed 2025 early stage</span>
-          <span class="tool-chip theme">HackerNews "Show HN" healthcare AI 2025</span>
-          <span class="tool-chip">+ 12 条通用 query（与对话一共用）</span>
+          <span class="tool-chip theme">site:techcrunch.com "pre-seed" OR "seed" healthcare AI clinical startup 2025</span>
+          <span class="tool-chip theme">"Y Combinator" W25 S25 healthcare AI digital health startup founders 2025</span>
+          <span class="tool-chip">site:news.ycombinator.com "Show HN" healthcare medical AI clinical 2025</span>
+          <span class="tool-chip">"seed round" "$2M" OR "$3M" OR "$5M" healthcare AI clinical startup 2025 founder</span>
+          <span class="tool-chip">digital health AI startup seed 2025 pre-seed announced founder</span>
+          <span class="tool-chip">"building in public" healthcare AI startup founder 2025 seed launched</span>
+          <span class="tool-chip">Taxo YC healthcare AI prior authorization 2025 founder seed</span>
+          <span class="tool-chip">Avelis Health LunaBill IO Health Honey Health healthcare AI seed 2025 founder</span>
+          <span class="tool-chip">demo day 2025 healthcare AI startup seed Techstars accelerator</span>
         </div>
       </div>
 
+      <div class="chat">
+        <div class="chat-msg agent">
+          <div class="chat-avatar">T</div>
+          <div class="chat-bubble">多源扫描完成。抓取约 60 条原始结果 → Stage 2 提取与评分 → Stage 2.5 补全创始人（3 项 unknown，触发定向搜索，Honey Health 暂未定位）</div>
+        </div>
+        <div class="chat-note">→ Stage 2.5：Honey Health 为隐形模式公司，创始人暂未公开，保留 unknown，建议深研时再次触发</div>
+      </div>
+
       <div class="stat-strip">
-        <div class="stat"><div class="stat-n">58</div><div class="stat-label">原始结果</div></div>
+        <div class="stat"><div class="stat-n">~60</div><div class="stat-label">原始结果</div></div>
         <div class="stat-divider"></div>
-        <div class="stat"><div class="stat-n">14</div><div class="stat-label">并行 Query</div></div>
+        <div class="stat"><div class="stat-n">9</div><div class="stat-label">并行 Query</div></div>
         <div class="stat-divider"></div>
         <div class="stat"><div class="stat-n">6</div><div class="stat-label">提取项目</div></div>
         <div class="stat-divider"></div>
-        <div class="stat"><div class="stat-n">5<span>/6</span></div><div class="stat-label">创始人已识别</div></div>
+        <div class="stat"><div class="stat-n">3<span>/6</span></div><div class="stat-label">创始人已识别</div></div>
       </div>
 
       <table class="results-table">
@@ -849,23 +857,23 @@ body {
       <div style="margin-bottom:1rem;">
         <div class="progress-row">
           <span class="progress-label">创始人识别率</span>
-          <div class="progress-track"><div class="progress-fill green" data-pct="75"></div></div>
-          <span class="progress-pct">75%</span>
+          <div class="progress-track"><div class="progress-fill green" data-pct="50"></div></div>
+          <span class="progress-pct">50%</span>
         </div>
         <div class="progress-row">
           <span class="progress-label">「高」吸引力占比</span>
-          <div class="progress-track"><div class="progress-fill amber" data-pct="42"></div></div>
-          <span class="progress-pct">42%</span>
+          <div class="progress-track"><div class="progress-fill amber" data-pct="58"></div></div>
+          <span class="progress-pct">58%</span>
         </div>
         <div class="progress-row">
           <span class="progress-label">有机构背书项目</span>
-          <div class="progress-track"><div class="progress-fill blue" data-pct="100"></div></div>
-          <span class="progress-pct">100%</span>
+          <div class="progress-track"><div class="progress-fill blue" data-pct="92"></div></div>
+          <span class="progress-pct">92%</span>
         </div>
       </div>
 
       <div class="compare-note">
-        <strong>GLNK</strong> 和 <strong>Overstand</strong> 在两轮中均出现，创始人信息一致（Raouf Abujaber + Rayan Ghandour / Sejoon Chang）。同一项目跨不同垂直 query 重复出现，是这套扫描逻辑里最强的信号验证。<strong>Stamp</strong> 两轮均有提取但创始人字段异常（Stage 2.5 未能确认），vc_appeal 为「中」，未进入 Part B 推荐列表。有具名创始人才能进 outreach，这条规则没有例外。
+        两轮扫描没有重叠项目，验证了垂直 query 策略的独立性——两次扫描覆盖的是真正不同的信息空间。<strong>AI Infrastructure</strong> 赛道以大额 pre-seed 为主（Niv-AI $12M、Trase $10.5M），创始人背景集中在前大厂高管；<strong>Healthcare AI</strong> 赛道 YC 批次覆盖更密（Taxo S24、Avelis W25、Pharos S24、LunaBill），to-operator 和 to-payer 的切入路径并行存在。<strong>Honey Health</strong> 是两轮里唯一从隐形模式融资后创始人仍未公开的项目——$7.8M Seed 已到账，Stage 2.5 会在深研时再触发定向搜索。创始人未知不代表项目差，代表进 outreach 之前还缺一步。
       </div>
     </section>
 
@@ -925,50 +933,50 @@ body {
 </div>
 
 <footer class="footer">
-  <span>见微·Timbre · Founder Intelligence System · 2026-05-27</span>
+  <span>见微·Timbre · Founder Intelligence System · 2026-05-29</span>
   <a href="https://github.com/NOSIEMPRE/Timbre" target="_blank">github.com/NOSIEMPRE/Timbre →</a>
 </footer>
 
 <script>
 // ── Data ────────────────────────────────────────────────────────────────────
 const RUN1 = [
-  {name:"GLNK",founder:"Raouf Abujaber, Rayan Ghandour",one_liner:"为医疗机构提供 AI 驱动的协作平台",stage:"unknown",market:"Healthcare B2B",signals:["YC W25","双创始人可溯源","两轮交叉验证"],source_url:"https://www.extruct.ai/data-room/ycombinator-companies-w25",vc_appeal:"高"},
-  {name:"Prósperos.ai",founder:"Salvador Chavez",one_liner:"为无银行账户社区提供 AI 金融服务",stage:"Bootstrapped",market:"Fintech / 普惠金融",signals:["YC W25","拉美市场白地","监管护城河"],source_url:"https://catalaize.substack.com/p/y-combinator-s25-batch-profile-and",vc_appeal:"高"},
-  {name:"Overstand",founder:"Sejoon Chang",one_liner:"为高管生成客户沟通摘要",stage:"unknown",market:"B2B SaaS / 企业通讯",signals:["YC W25","两轮交叉验证"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
-  {name:"Mercura",founder:"unknown",one_liner:"基于物料清单和规格表的 AI 报价工具",stage:"unknown",market:"制造业 AI",signals:["YC W25","垂直市场切入"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
-  {name:"Stamp",founder:"unknown",one_liner:"AI 邮件客户端，自动分类和回复",stage:"Bootstrapped",market:"企业通讯工具",signals:["YC W25","效率工具"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
-  {name:"Payall",founder:"unknown",one_liner:"低成本合规跨境支付解决方案",stage:"unknown",market:"跨境支付",signals:["YC W25","合规护城河"],source_url:"https://catalaize.substack.com/p/y-combinator-s25-batch-profile-and",vc_appeal:"中"},
+  {name:"Niv-AI",founder:"Tomer Timor, Edward Kizis",one_liner:"AI 优化数据中心电力分配，解锁存量算力容量",stage:"Seed",market:"AI Infrastructure / 数据中心",signals:["$12M Seed 2025","双具名创始人","TechCrunch 报道"],source_url:"https://techcrunch.com",vc_appeal:"高"},
+  {name:"Trase",founder:"Baskar Sridharan",one_liner:"为 AI Agent 构建生产级运行基础设施",stage:"Pre-Seed",market:"AI Infrastructure / Agentic AI",signals:["$10.5M Pre-Seed","前 AWS VP of AI/ML","媒体两轮验证"],source_url:"https://techcrunch.com",vc_appeal:"高"},
+  {name:"Empromptu",founder:"Sarah Leven, Sean Robinson",one_liner:"无代码平台让企业快速构建内部 AI 应用",stage:"Pre-Seed",market:"Enterprise AI / No-code",signals:["$2M Pre-Seed","Precursor Ventures","TechCrunch 报道 2025-12"],source_url:"https://techcrunch.com/2025/12/09/empromptu-raises-2m-pre-seed-to-help-enterprises-build-ai-apps/",vc_appeal:"高"},
+  {name:"Ajen",founder:"unknown",one_liner:"开源 AI Employees 平台，代替人力完成结构化任务",stage:"Pre-Seed",market:"AI Infrastructure / Agent",signals:["Show HN 2026-03","GitHub 开源","早期技术社区验证"],source_url:"https://news.ycombinator.com",vc_appeal:"中"},
+  {name:"Kernel",founder:"unknown",one_liner:"为 AI Agent 互联互通构建开放基础设施层",stage:"Seed",market:"AI Infrastructure / Agent Internet",signals:["YC S25","Accel 跟投","开源协议"],source_url:"https://www.extruct.ai/research/ycs25/",vc_appeal:"中"},
+  {name:"LogicStar",founder:"unknown",one_liner:"AI Agent 自动完成软件应用的日常运维工作",stage:"Pre-Seed",market:"DevOps / AI Maintenance Agent",signals:["$3M Pre-Seed 2024","垂直切入点清晰","无需改动现有代码库"],source_url:"https://techcrunch.com",vc_appeal:"中"},
 ];
 
 const RUN2 = [
-  {name:"GLNK",founder:"Rayan Ghandour, Raouf Abujaber",one_liner:"AI 驱动的医疗协作平台",stage:"unknown",market:"Healthcare B2B",signals:["YC W25","两轮交叉验证","双创始人"],source_url:"https://www.extruct.ai/data-room/ycombinator-companies-w25",vc_appeal:"高"},
-  {name:"Superdesign",founder:"Jason Zhou",one_liner:"从自然语言 prompt 生成 UI 原型",stage:"unknown",market:"AI 产品设计",signals:["YC W25","设计工具","开发者生产力"],source_url:"https://wellows.com/blog/ai-startups",vc_appeal:"高"},
-  {name:"Wand",founder:"Rotem Alaluf",one_liner:"AI 与人力协作重塑劳动力市场",stage:"unknown",market:"AI + 人力协作",signals:["YC W25","B2B 服务","Talent marketplace"],source_url:"https://www.linkedin.com/posts/ollieforsyth_meet-y-combinators-latest-batch-of-startups-activity-7370824601217691648-TF-3",vc_appeal:"高"},
-  {name:"Overstand",founder:"Sejoon Chang",one_liner:"为忙碌高管生成客户沟通摘要",stage:"unknown",market:"B2B SaaS / 企业通讯",signals:["YC W25","两轮交叉验证"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
-  {name:"Polco",founder:"Nick Mastronardi",one_liner:"AI 驱动的公共部门数据洞察平台",stage:"unknown",market:"公共部门 AI",signals:["YC W25","政府市场"],source_url:"https://catalaize.substack.com/p/y-combinator-s25-batch-profile-and",vc_appeal:"中"},
-  {name:"Stamp",founder:"unknown",one_liner:"AI 邮件客户端，自动分类和回复邮件",stage:"unknown",market:"企业通讯工具",signals:["YC W25","两轮交叉验证"],source_url:"https://stealthstartupspy.substack.com/p/stealth-startup-spy-215-y-combinator",vc_appeal:"中"},
+  {name:"Taxo",founder:"Ahmed Kerwan MD",one_liner:"AI 自动完成事前授权、账单审核和患者接诊",stage:"Seed",market:"Healthcare AI / Admin Automation",signals:["$5M Seed","YC S24","General Catalyst + Character Capital","$1M ARR 6 个月内"],source_url:"https://techcrunch.com/2025/03/28/yc-backed-taxo-raised-5m-to-slash-healthcare-admin-with-its-ai-reasoning-engine/",vc_appeal:"高"},
+  {name:"LunaBill",founder:"Suhail Parry, David Day, Yash Raj",one_liner:"AI 语音代理自动跟进医疗账单团队的保险催款电话",stage:"unknown",market:"Healthcare AI / Revenue Cycle",signals:["YC 背书","$764K ARR 已签约","CTO 前公司触达 12 万临床医生"],source_url:"https://www.ycombinator.com/companies/lunabill",vc_appeal:"高"},
+  {name:"Honey Health",founder:"unknown",one_liner:"AI Agent 自主登入 EHR 完成端到端行政工作流",stage:"Seed",market:"Healthcare AI / Back Office",signals:["$7.8M Seed","Pelion Health Partners 领投","从隐形模式融资"],source_url:"https://hitconsultant.net/2025/10/27/honey-health-raises-7-8m-seed-to-automate-healthcare-back-office-workflows-with-ai-agents/",vc_appeal:"高"},
+  {name:"Avelis Health",founder:"Angel Onuoha, Ahmad Shehu",one_liner:"AI 自动审计医疗账单错误、为患者谈判降费",stage:"Pre-Seed",market:"Healthcare AI / Patient Billing",signals:["$500K Pre-Seed","YC W25","双创始人前公司已被收购"],source_url:"https://finance.yahoo.com/news/avelis-health-ai-powered-company-173727195.html",vc_appeal:"高"},
+  {name:"Pharos",founder:"unknown",one_liner:"AI 自动完成医院质量汇报合规流程",stage:"Seed",market:"Healthcare AI / Compliance",signals:["$5M Seed","YC S24","Felicis 领投"],source_url:"https://techcrunch.com/2024/10/25/yc-startup-pharos-lands-a-5m-seed-led-by-felicis-to-bring-ai-to-quality-reporting/",vc_appeal:"中"},
+  {name:"IO Health",founder:"unknown",one_liner:"家庭护理与临终关怀机构的 AI 合规与质量平台",stage:"Seed",market:"Healthcare AI / Home Care Compliance",signals:["$2M Seed","Nina Capital","医疗专业投资人跟投"],source_url:"https://www.thesaasnews.com/news/io-health-raises-2-million-in-seed-round",vc_appeal:"中"},
 ];
 
 const BEST5 = [
   {
-    rank:1, project: RUN1[0],
-    vc_note: "两轮扫描均出现，双创始人 Raouf Abujaber 和 Rayan Ghandour 均可溯源。医疗机构协作是刚需且高度碎片化的市场，YC 背书降低了初期尽调门槛。核心验证点：是否已有付费 pilot 医院或诊所，以及 EHR 集成的推进进度。"
+    rank:1, project: RUN2[0], // Taxo
+    vc_note: "创始人 Ahmed Kerwan 本人是执业医生，Fulbright 学者，研究引用量超 25,000。YC S24，General Catalyst + Character Capital 跟投，6 个月内 $1M ARR，prior auth 通过率从行业均值 80% 提升到 98%。医疗行政是万亿级市场里效率最差的环节，监管复杂度就是护城河，大玩家没有理由主动降价。核心验证点：specialty clinic 覆盖率和 ARR 增速是否持续。"
   },
   {
-    rank:2, project: RUN1[1],
-    vc_note: "创始人 Salvador Chavez 可溯源，YC W25。拉美和移民社区是传统金融科技覆盖严重不足的白地，合规本身就是护城河，大玩家没有动力进来。关键风险是客户获取成本和监管节奏，需要确认 CAC 和 LTV 是否匹配。"
+    rank:2, project: RUN1[0], // Niv-AI
+    vc_note: "双创始人 Tomer Timor + Edward Kizis，$12M Seed，切入数据中心电力分配优化。算力瓶颈和电力成本是 2025 年 AI 基础设施里最热的两个子赛道，供给侧合规压力持续推高采购意愿。核心验证点：是否已有头部云厂或 colocation 付费客户，技术壁垒能否对抗超大规模云厂自研。"
   },
   {
-    rank:3, project: RUN2[1],
-    vc_note: "创始人 Jason Zhou 可溯源，YC W25。从自然语言生成 UI 原型，切入产品经理和设计师的工作流，不需要绑定特定代码框架。需要确认的是黏性：用一次够用还是会持续回来用，复购逻辑是否成立。"
+    rank:3, project: RUN1[1], // Trase
+    vc_note: "创始人 Baskar Sridharan 是前 AWS VP of AI/ML，$10.5M Pre-Seed，专注 AI Agent 的生产级基础设施。随着 agentic AI 进入真实工作流，Agent 编排和生产可靠性的基础层需求会快速增长。核心验证点：是否已有 enterprise pilot，以及与 Anthropic/OpenAI 生态的正式集成关系。"
   },
   {
-    rank:4, project: RUN2[2],
-    vc_note: "创始人 Rotem Alaluf 可溯源，YC W25。AI 和人力协作的 talent marketplace，方向和 Scale AI 类似但更轻资产。B2B 服务行业的 ROI 论证清晰，核心验证点是 LOI 客户数量和单位经济模型里 AI 替代人力的比例。"
+    rank:4, project: RUN2[3], // Avelis Health
+    vc_note: "双创始人 Angel Onuoha + Ahmad Shehu，YC W25 $500K Pre-Seed，前公司 Zuvy 已被收购。从 to-consumer 切入患者账单审计是独特的角度，大多数竞品在 provider 侧。最大风险是个人付费意愿：若转 B2B 走雇主福利渠道，单位经济立刻改善，这个枢轴点需要在深研时确认。"
   },
   {
-    rank:5, project: RUN2[3],
-    vc_note: "两轮扫描均出现，创始人 Sejoon Chang 可溯源，YC W25。高管的收件箱是真实痛点，摘要这个切入点门槛低但粘性高。竞争风险是 Gmail 和 Outlook 原生集成，需要确认差异化在哪里，以及 enterprise 合规审查的时间线。"
+    rank:5, project: RUN2[1], // LunaBill
+    vc_note: "三位具名创始人，YC 背书，CTO David Day 前公司 Skiesoft 已触达 12 万名临床医生——团队有医疗系统进入能力。AI 语音把账单团队每天 80% 的重复拨打时间解放出来。核心风险：不同保险公司的通话流程差异较大，能否统一处理决定规模上限，这是首要验证点。"
   },
 ];
 
