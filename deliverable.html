@@ -897,10 +897,16 @@ body {
         <div class="qa-num">01</div>
         <h3 class="qa-question">你用什么标准衡量这个 Skill 的输出质量？</h3>
         <p class="qa-body">
-          判断标准只有一个：这条记录能不能直接进 outreach 流程？我设了三个最低条件：创始人姓名已知，至少一条机构背书信号（YC 批次、融资公告、媒体报道），信号来自两个以上独立来源。三条都满足才进列表，缺一降级或剔除。
+          我把这个问题具体化成一件事：这份输出能不能直接进投资流程，还是说 analyst 拿到之后还得自己再搜一轮。Timbre 的定位在初筛和 outreach 之间，所以标准要对这个位置负责。
         </p>
         <p class="qa-body">
-          在此基础上，<code class="code-inline">eval/quality_check.py</code> 把这套判断量化成了 0–100 的评分，权重最高的两项是节段完整性（40 分，8 个必须节段）和引用密度（25 分，正文 [N] 标注对应真实 URL）。评分低于 75 分时，自动触发 LLM 二次审核，从事实可信度、完整性、精准度、风险质量四个维度打分。平时可以跑 <code class="code-inline">timbre eval</code>，不消耗 API，离线批量扫描全部档案。
+          sourcing 输出的最低进入条件是三条：有具名创始人、至少一条机构背书信号（YC 批次、融资公告、媒体报道）、信号来自两个以上独立来源。三条都满足标 ▲ 高，缺一降级。没有名字没法 outreach，信号单一可能是误报，这两个情况都不应该进推荐列表。
+        </p>
+        <p class="qa-body">
+          founder-research 的档案质量用 <code class="code-inline">eval/quality_check.py</code> 打分，满分 100，六个维度。节段完整性权重最高（40 分），因为融资信息整节空白，IC 会议上什么都说不出来，这是硬缺陷。引用密度第二（25 分），没有 <code class="code-inline">[N]</code> 标注的事实在尽调场景里等于没有来源，不能用。P0/P1/P2 风险分级第三（15 分），有风险分析才是尽调档案，否则只是公司简介。
+        </p>
+        <p class="qa-body">
+          分数低于 75 分时，自动触发 LLM-as-Judge 第二层审核，从锚定性、完整性、精准度、风险质量四个维度再打一遍，有捏造嫌疑就亮红色警告。设计成两层的原因是成本：结构性问题用正则毫秒级判断，只有真正有问题的档案才多花一次 API 调用做深度审查。日常维护可以跑 <code class="code-inline">timbre eval</code>，不调 API，离线批量扫描全部档案的评分和问题列表。
         </p>
       </div>
 
@@ -908,12 +914,18 @@ body {
         <div class="qa-num">02</div>
         <h3 class="qa-question">你做了哪些设计决策来控制"噪声"？</h3>
         <p class="qa-body">
-          噪声主要来自两类：大公司发布新功能被误当成 startup，以及阶段不在 pre-seed/seed 的项目混入。我做了三层过滤。
+          噪声分两种，性质不同，控制方法也不同。
+        </p>
+        <p class="qa-body">
+          第一种是错误的项目进了列表，比如大公司产品线混入、融资阶段不对、me-too 产品。控制点在 query 层和提取层。query 层所有搜索词强制带 "pre-seed"/"seed" 和年份，YC 批次用具体编号（W25/S25）不泛搜，<code class="code-inline">site:</code> 把来源锁在 HN 和 TechCrunch，大公司发布会新闻基本被拦在外面。提取层给 LLM 的 prompt 里有四条硬规则（成立时间、阶段、技术差异化、排除独角兽），输出上限强制设 12 个。上限这个细节很重要：没有上限 LLM 会把不确定的项目也塞进来凑数，有了上限它必须做取舍。
+        </p>
+        <p class="qa-body">
+          第二种是创始人名字抽错，把报道里的投资人或记者当成了 founder。控制点在 Stage 2.5 的 <code class="code-inline">_clean_candidate()</code> 函数里，八层过滤从粗到细：词数、大写规则、排除月份名、排除常见英语词、排除公司名词尾（Inc、Labs、Capital 等）、排除句子动词片段、排除已知噪声词组。策略是宁可漏报也不错报，因为把错误名字写进档案比标 unknown 危害更大，analyst 可能把它当事实用。实测 unknown 率从 60% 降到 22%，误报率接近 0。
         </p>
         <ul class="qa-bullets">
-          <li><span class="qa-highlight">Query 层</span>：所有 query 都有 "seed"/"2025" 限定词，搜索时用 <code class="code-inline">site:</code> 只看 HN 和 TechCrunch，直接拦截大部分发布会新闻。</li>
-          <li><span class="qa-highlight">提取层</span>：给 LLM 的 prompt 里有四条硬规则，成立时间、阶段、技术差异化、排除已知独角兽，并且强制输出上限 12 个，让模型做取舍，不能全量返回。</li>
-          <li><span class="qa-highlight">展示层</span>：▲●▽ 三档分级，analyst 扫一眼就可以跳过低分项目，只有「高」评级的才建议进 founder-research 深研。</li>
+          <li><span class="qa-highlight">Query 层</span>：年份 + 阶段限定词 + <code class="code-inline">site:</code> 过滤，拦截大公司内容</li>
+          <li><span class="qa-highlight">提取层</span>：四条硬规则 + 12 个上限，逼模型做取舍</li>
+          <li><span class="qa-highlight">名字层</span>：八层正则过滤，错误归属宁可保留 unknown</li>
         </ul>
       </div>
 
@@ -921,11 +933,19 @@ body {
         <div class="qa-num">03</div>
         <h3 class="qa-question">如果给你两周时间继续打磨，你优先改进哪一个环节？</h3>
         <p class="qa-body">
-          目前最大的缺口是 Stage 2.5 的 founder 校验逻辑。现在的做法是：搜索候选姓名、通过正则过滤、写入档案。缺的是最后一步，确认"这个人是不是这家公司的 founder"。Stamp 在两轮测试里都出现了错误归属，搜索结果页上的其他人名被提取进来了。在 Stage 2.5 结束前加一次模型确认，这个问题基本可以解决。
+          有三个方向，每一个都是结构性改动，不是小修小补。
         </p>
-        <p class="qa-body">
-          第二件事是跨 session 去重。用几周之后，每次扫描都会重新浮现同一批 YC W25 公司，新鲜感消失，list fatigue 来了。在 SQLite 记忆层加公司指纹，已研究过的往后排，真正新的往前推，这是让工具保持实用价值的关键。两件事都是一两天的工作量，不需要改 pipeline 结构。
-        </p>
+        <ul class="qa-bullets">
+          <li>
+            <span class="qa-highlight">Tool Calling 延伸到 Synthesis</span>：目前 Stage 3 综合写档用的是单次 <code class="code-inline">complete()</code>，把搜索结果一次性喂给模型写完。发现某个维度数据不够，它只能写「暂无公开数据」，没有机会补搜。改成 <code class="code-inline">react_loop()</code> 之后，模型可以在写作过程中自主决定去补一条搜索，比如融资数据薄了就再搜一次 Crunchbase。这个改动对档案完整性的提升最直接，eval 分数可以验证，放第一优先。
+          </li>
+          <li>
+            <span class="qa-highlight">RAG</span>：vault 现在只写不读。研究了 20 个项目之后，vault 里已经有大量关于投资机构、赛道格局的知识，但每次新开一个研究都从零开始，跟 vault 是否存在无关。改进方向是在 synthesis 阶段之前，从 vault 里用 BM25 检索与当前主题相关的历史档案片段，注入 context，让模型写分析时能做横向比较。这不需要引入向量数据库，现有的 SQLite FTS5 就够用。这个改动是 Timbre"越用越好用"价值的真正落地，但需要 vault 有足够积累才能感受到，放第二。
+          </li>
+          <li>
+            <span class="qa-highlight">Agent 意图识别</span>：当前意图分类器输出的是单一 intent，处理不了组合请求。比如"帮我找 AI infrastructure 早期项目，找到好的直接研究一下"，现在只能路由到 sourcing，出列表之后等用户输入数字才接着跑 research。改成任务规划层之后，一条输入可以生成一个多步计划，sourcing 完成后自动把排名最高的项目传入 founder-research，不需要用户手动接力。工作量最小，但对档案质量本身没有影响，放第三。
+          </li>
+        </ul>
       </div>
     </section>
 
